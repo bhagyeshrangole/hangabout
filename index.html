@@ -3,141 +3,183 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hangabout — a lucky charm for your Mac screen</title>
-<meta name="description" content="A lucky charm that hangs from the top of your Mac screen. It sways while you work, ignores every click, and holds your reminders on a card.">
+<title>Hangabout — a companion for the top of your Mac screen</title>
+<meta name="description" content="A companion that hangs from the top of your Mac screen and makes sure you actually see your reminders. Free for macOS.">
+<meta property="og:title" content="Hangabout">
+<meta property="og:description" content="A companion that hangs from the top of your Mac screen and makes sure you actually see your reminders.">
 <style>
   :root {
-    --bg: #faf7f2;
-    --ink: #1c1917;
-    --muted: #6b625a;
-    --line: #e4ddd3;
-    --accent: #b4432c;
-    --accent-ink: #fff;
-    --card: #fff;
+    --bg: #faf7f2;  --ink: #1c1917;  --muted: #6b625a;
+    --line: #e4ddd3; --card: #fff;
+    --accent: #b4432c; --accent-ink: #fff;
+    --sky-a: #293357; --sky-b: #141a2e; --sky-ink: #fafbff;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #16140f;
-      --ink: #f0ebe3;
-      --muted: #9c9288;
-      --line: #2e2a23;
-      --accent: #e06a4e;
-      --accent-ink: #16140f;
-      --card: #1e1b15;
+      --bg: #14120e;  --ink: #f0ebe3;  --muted: #9c9288;
+      --line: #2e2a23; --card: #1e1b15;
+      --accent: #e06a4e; --accent-ink: #14120e;
     }
   }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--ink);
+    margin: 0; background: var(--bg); color: var(--ink);
     font: 16px/1.65 ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
-  .wrap { max-width: 620px; margin: 0 auto; padding: 0 24px 80px; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 0 24px; }
+  .narrow { max-width: 640px; margin-left: auto; margin-right: auto; }
+  a { color: var(--accent); }
+  h1, h2, h3 { letter-spacing: -.02em; }
 
-  /* The cord and charm, hanging from the top of the page the way the app
-     hangs from the top of the screen. */
-  /* The hanger hangs from the very top of the page, the way the app hangs
-     from the very top of your screen. Click it and it swings, same as the app. */
-  .hang {
-    display: block;
-    margin: 0 auto;
-    width: 240px; height: 272px;
-    max-width: 100%;
-    overflow: visible;
-    cursor: grab;
-    outline: none;
-  }
-  .hang:active { cursor: grabbing; }
-  .hang .cord { stroke: var(--muted); stroke-width: 2.5; }
-
-  /* Stroke widths are in the mark's own 100-unit space, the same fractions
-     Mark.swift uses, so the scale factor carries them automatically. */
-  .hang .mark path { fill: none; stroke: var(--accent); stroke-linecap: round; stroke-linejoin: round; }
-  .hang .neck, .hang .hook { stroke-width: 6.2; }
-  .hang .bar   { stroke-width: 7.5; }
-  .hang .smile { stroke-width: 5; }
-  .hang .eye   { fill: var(--accent); }
-  .hang:focus-visible .mark { stroke: var(--ink); }
-
+  /* ---------- hero ---------- */
+  .hero { text-align: center; padding-bottom: 20px; }
+  .hero-hang { display: block; margin: 0 auto; width: 210px; height: 250px; overflow: visible; }
+  .hero-hang .cord { stroke: var(--muted); stroke-width: 2.4; }
+  .mark path { fill: none; stroke: var(--accent); stroke-linecap: round; stroke-linejoin: round; }
+  .mark .neck, .mark .hook { stroke-width: 6.2; }
+  .mark .bar { stroke-width: 7.5; }
+  .mark .smile { stroke-width: 5; }
+  .mark .eye { fill: var(--accent); }
   @media (prefers-reduced-motion: no-preference) {
-    /* Anchored at the top of the cord, so rotating the group *is* the swing —
-       the same trick the app plays with a CALayer anchor point. */
-    .swing { transform-origin: 120px 0; animation: sway 5s ease-in-out infinite; }
-    @keyframes sway {
-      0%, 100% { transform: rotate(-6deg); }
-      50%      { transform: rotate(6deg); }
-    }
-    /* A flick: a big swing that loses energy and settles back to the idle sway. */
-    .hang.flick .swing { animation: flick 2.4s cubic-bezier(.33,0,.5,1) forwards; }
-    @keyframes flick {
-      0%   { transform: rotate(0deg); }
-      12%  { transform: rotate(26deg); }
-      30%  { transform: rotate(-19deg); }
-      48%  { transform: rotate(13deg); }
-      65%  { transform: rotate(-8deg); }
-      82%  { transform: rotate(5deg); }
-      100% { transform: rotate(-6deg); }
-    }
+    .hero-hang .swing { transform-origin: 105px 0; animation: sway 5s ease-in-out infinite; }
+    @keyframes sway { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
   }
-
-  h1 { font-size: 2.6rem; line-height: 1.1; margin: 10px 0 10px; letter-spacing: -.02em; text-align: center; }
-  .tag { color: var(--muted); font-size: 1.15rem; text-align: center; margin: 0 auto 38px; max-width: 30rem; }
-
-  .cta { text-align: center; margin-bottom: 14px; }
+  h1 { font-size: 3.1rem; line-height: 1.05; margin: 14px 0 12px; }
+  .tag { font-size: 1.2rem; color: var(--muted); max-width: 30rem; margin: 0 auto 32px; }
   .btn {
-    display: inline-block;
-    background: var(--accent);
-    color: var(--accent-ink);
-    text-decoration: none;
-    font-size: 1.1rem;
-    font-weight: 600;
-    padding: 15px 34px;
-    border-radius: 11px;
+    display: inline-block; background: var(--accent); color: var(--accent-ink);
+    text-decoration: none; font-size: 1.08rem; font-weight: 600;
+    padding: 15px 34px; border-radius: 11px; border: 0; cursor: pointer;
     transition: transform .12s ease, filter .12s ease;
   }
   .btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
-  .req { color: var(--muted); font-size: .9rem; text-align: center; margin: 0 0 46px; }
+  .req { color: var(--muted); font-size: .9rem; margin: 14px 0 0; }
 
-  h2 { font-size: 1.15rem; margin: 40px 0 12px; letter-spacing: -.01em; }
-  p { margin: 0 0 14px; }
-  ol, ul { margin: 0 0 14px; padding-left: 22px; }
-  li { margin-bottom: 7px; }
-  kbd {
-    font: inherit; font-size: .92em; font-weight: 600;
-    background: var(--card); border: 1px solid var(--line);
-    border-radius: 5px; padding: 1px 6px;
+  /* ---------- the demo ---------- */
+  .demo { margin: 60px 0 28px; }
+  .screen {
+    position: relative; width: 100%; aspect-ratio: 900 / 340;
+    background: linear-gradient(var(--sky-a), var(--sky-b));
+    border-radius: 14px; overflow: hidden;
+    box-shadow: 0 18px 44px rgba(0,0,0,.26);
+    cursor: crosshair; user-select: none;
   }
-  .note {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-left: 3px solid var(--accent);
-    border-radius: 8px;
-    padding: 18px 22px;
-    margin: 0 0 14px;
+  .menubar {
+    position: absolute; inset: 0 0 auto 0; height: 7.5%;
+    background: rgba(255,255,255,.09);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 14px; color: rgba(255,255,255,.72);
+    font-size: clamp(9px, 1.35vw, 13px); z-index: 3; pointer-events: none;
   }
+  .menubar .right { display: flex; align-items: center; gap: 10px; }
+  .menubar svg { width: 15px; height: 15px; display: block; }
+  .menubar .mark path { stroke: rgba(255,255,255,.85); }
+  .menubar .mark .eye { fill: rgba(255,255,255,.85); }
+  #stage { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; }
+  #stage .cord { stroke: rgba(255,255,255,.5); stroke-width: 2; }
+  #stage .mark path { stroke: #f5a623; }
+  #stage .mark .eye { fill: #f5a623; }
+
+  /* comic balloon, same recipe as the app: cream fill, heavy outline,
+     hard offset shadow, uppercase casual face */
+  .balloon {
+    position: absolute; z-index: 4; max-width: 46%;
+    background: #fdf6e3; color: #16140f;
+    border: 3px solid #16140f; border-radius: 14px;
+    box-shadow: 5px 5px 0 #16140f;
+    padding: 11px 15px 9px;
+    font-family: "Comic Sans MS", "Chalkboard SE", "Marker Felt", cursive;
+    text-transform: uppercase; font-size: clamp(11px, 1.6vw, 16px); line-height: 1.3;
+    opacity: 0; transform: translate(-50%, 6px) scale(.9); transform-origin: 50% 100%; z-index: 6;
+    transition: opacity .18s ease, transform .18s cubic-bezier(.2,1.4,.5,1);
+    pointer-events: none; cursor: pointer;
+  }
+  .balloon.show { opacity: 1; transform: translate(-50%, 0) scale(1); pointer-events: auto; }
+  .balloon .snooze { display: block; margin-top: 5px; font-size: .74em; opacity: .62; text-transform: none; }
+  .balloon::after {
+    content: ""; position: absolute; left: 50%; bottom: -13px; width: 16px; height: 16px;
+    background: #fdf6e3; border-right: 3px solid #16140f; border-bottom: 3px solid #16140f;
+    transform: translateX(-50%) rotate(45deg) skew(-8deg,-8deg);
+  }
+  .chip {
+    position: absolute; z-index: 4;
+    background: rgba(12,14,24,.86); color: #fafbff;
+    border: 1px solid rgba(255,255,255,.22); border-radius: 9px;
+    padding: 5px 11px 7px; font-variant-numeric: tabular-nums;
+    font-size: clamp(10px, 1.4vw, 14px); font-weight: 600;
+    opacity: 0; transform: translate(-50%, 4px); transition: opacity .2s ease, transform .2s ease;
+    pointer-events: none;
+  }
+  .chip.show { opacity: 1; transform: translate(-50%, 0); }
+  .chip .track { display: block; height: 3px; margin-top: 5px; border-radius: 2px; background: rgba(255,255,255,.22); }
+  .chip .track i { display: block; height: 100%; border-radius: 2px; background: #f5a623; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 9px; margin: 18px 0 10px; }
+  .ctl {
+    font: inherit; font-size: .93rem; font-weight: 550;
+    background: var(--card); color: var(--ink);
+    border: 1px solid var(--line); border-radius: 9px;
+    padding: 9px 15px; cursor: pointer;
+    transition: border-color .12s ease, transform .12s ease;
+  }
+  .ctl:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .ctl[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .pills { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; margin-bottom: 14px; }
+  .pills .lbl { color: var(--muted); font-size: .88rem; margin-right: 2px; }
+  .typebox {
+    width: 100%; font: inherit; padding: 11px 14px;
+    border: 1px dashed var(--line); border-radius: 9px;
+    background: transparent; color: var(--ink);
+  }
+  .typebox:focus { outline: none; border-color: var(--accent); border-style: solid; }
+  .hint { color: var(--muted); font-size: .88rem; margin: 10px 0 0; }
+
+  /* ---------- feature sections ---------- */
+  section { padding: 54px 0; border-top: 1px solid var(--line); }
+  section:first-of-type { border-top: 0; }
+  h2 { font-size: 1.9rem; margin: 0 0 12px; }
+  .lede { font-size: 1.08rem; color: var(--muted); margin: 0 auto 22px; }
+  p { margin: 0 0 15px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; margin-top: 26px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; }
+  .card h3 { font-size: 1.02rem; margin: 0 0 7px; }
+  .card p { font-size: .94rem; color: var(--muted); margin: 0; }
+
+  /* the working-clock demo */
+  .clocks { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0 14px; }
+  .clock { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 17px 19px; }
+  .clock h3 { font-size: .92rem; margin: 0 0 3px; }
+  .clock .who { color: var(--muted); font-size: .8rem; margin: 0 0 11px; }
+  .clock .bar { height: 9px; border-radius: 5px; background: var(--line); overflow: hidden; }
+  .clock .bar i { display: block; height: 100%; width: 0%; background: var(--accent); border-radius: 5px; }
+  .clock.ours .bar i { background: #3f9e5a; }
+  .clock .state { font-size: .82rem; color: var(--muted); margin: 9px 0 0; font-variant-numeric: tabular-nums; }
+  .fired { color: var(--accent); font-weight: 600; }
+
+  ol { padding-left: 20px; } li { margin-bottom: 8px; }
+  kbd { font: inherit; font-size: .92em; font-weight: 600; background: var(--card);
+        border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; }
+  .note { background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--accent);
+          border-radius: 9px; padding: 18px 22px; }
   .note p:last-child { margin-bottom: 0; }
-  footer {
-    margin-top: 56px; padding-top: 22px;
-    border-top: 1px solid var(--line);
-    color: var(--muted); font-size: .88rem; text-align: center;
+  .cta-end { text-align: center; }
+  footer { padding: 30px 0 70px; color: var(--muted); font-size: .88rem; text-align: center; }
+
+  @media (max-width: 620px) {
+    h1 { font-size: 2.3rem; }
+    .clocks { grid-template-columns: 1fr; }
   }
-  a { color: var(--accent); }
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <svg class="hang" viewBox="0 0 240 272" role="img"
-       aria-label="The Hangabout coat hanger, with a face, hanging from a cord. Click it to make it swing."
-       tabindex="0">
+<header class="hero wrap">
+  <svg class="hero-hang" viewBox="0 0 210 250" aria-hidden="true">
     <g class="swing">
-      <line class="cord" x1="120" y1="0" x2="120" y2="157"/>
-      <!-- The same hanger Mark.swift draws for the app icon and menu bar,
-           in the same proportions. Swift works in y-up coordinates and SVG
-           in y-down, so each y here is (100 - the Swift value). -->
-      <g class="mark" transform="translate(50 140) scale(1.4)">
+      <line class="cord" x1="105" y1="0" x2="105" y2="142"/>
+      <g class="mark" transform="translate(42 127) scale(1.26)">
         <path class="neck"  d="M50 12 L50 36"/>
         <path class="hook"  d="M49.5 12 A5.5 5.5 0 0 1 59.45 8.77"/>
         <path class="bar"   d="M10 74 Q22 44 50 36 Q78 44 90 74"/>
@@ -148,62 +190,456 @@
       </g>
     </g>
   </svg>
-
   <h1>Hangabout</h1>
-  <p class="tag">A lucky charm that hangs from the top of your Mac screen. It sways while you work, ignores every click, and swings when you flick it.</p>
+  <p class="tag">A companion that lives at the top of your Mac screen — and makes sure you actually see the things you asked to be reminded about.</p>
+  <a class="btn" href="https://github.com/bhagyeshrangole/hangabout-releases/releases/latest/download/Hangabout.zip">⬇&nbsp; Download for Mac</a>
+  <p class="req">Free · Apple Silicon · macOS 14 Sonoma or later</p>
+</header>
 
-  <div class="cta">
-    <a class="btn" href="https://github.com/bhagyeshrangole/hangabout-releases/releases/latest/download/Hangabout.zip">⬇&nbsp; Download for Mac</a>
+<div class="wrap demo">
+  <h2>Here it is. Go on, poke it.</h2>
+  <p class="lede">This is a working model of the app, running right here in the page — same pendulum, same balloon, same behaviour.</p>
+
+  <div class="screen" id="screen">
+    <div class="menubar">
+      <span>Hangabout</span>
+      <span class="right">
+        <svg viewBox="0 0 100 86" aria-hidden="true"><g class="mark"><path class="neck"  d="M50 12 L50 36"/>
+        <path class="hook"  d="M49.5 12 A5.5 5.5 0 0 1 59.45 8.77"/>
+        <path class="bar"   d="M10 74 Q22 44 50 36 Q78 44 90 74"/>
+        <path class="bar"   d="M10 74 L90 74"/>
+        <circle class="eye" cx="38.5" cy="53" r="4.2"/>
+        <circle class="eye" cx="61.5" cy="53" r="4.2"/>
+        <path class="smile" d="M40 61.5 Q50 69 60 61.5"/></g></svg>
+        <span id="clock">—</span>
+      </span>
+    </div>
+
+    <svg id="stage" viewBox="0 0 900 340" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      <defs>
+        <linearGradient id="abd" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#d63031"/><stop offset="1" stop-color="#7a1218"/>
+        </linearGradient>
+      </defs>
+
+      <!-- a hanging companion: cord + character, rotated about the pin -->
+      <g id="hangGroup">
+        <line class="cord" id="cord" x1="0" y1="0" x2="0" y2="120"/>
+        <g id="charHolder">
+          <g id="charSpider" transform="scale(1.02) translate(-100 0)">
+            <path d="M91.0 23.0 Q88.48 0.0 66.4 -3.0 Q54.88 -1.0 52.0 57.0" fill="none" stroke="#14141a" stroke-width="4.6" stroke-linecap="round"/>
+        <path d="M91.0 29.0 Q86.08 6.0 59.4 6.0 Q45.48 8.0 42.0 65.0" fill="none" stroke="#14141a" stroke-width="4.25" stroke-linecap="round"/>
+        <path d="M91.0 35.0 Q83.68 12.0 52.4 15.0 Q36.08 17.0 32.0 73.0" fill="none" stroke="#14141a" stroke-width="3.9" stroke-linecap="round"/>
+        <path d="M91.0 41.0 Q81.28 18.0 45.4 24.0 Q26.68 26.0 22.0 81.0" fill="none" stroke="#14141a" stroke-width="3.55" stroke-linecap="round"/>
+        <path d="M109.0 23.0 Q111.52 0.0 133.6 -3.0 Q145.12 -1.0 148.0 57.0" fill="none" stroke="#14141a" stroke-width="4.6" stroke-linecap="round"/>
+        <path d="M109.0 29.0 Q113.92 6.0 140.6 6.0 Q154.52 8.0 158.0 65.0" fill="none" stroke="#14141a" stroke-width="4.25" stroke-linecap="round"/>
+        <path d="M109.0 35.0 Q116.32 12.0 147.6 15.0 Q163.92 17.0 168.0 73.0" fill="none" stroke="#14141a" stroke-width="3.9" stroke-linecap="round"/>
+        <path d="M109.0 41.0 Q118.72 18.0 154.6 24.0 Q173.32 26.0 178.0 81.0" fill="none" stroke="#14141a" stroke-width="3.55" stroke-linecap="round"/>
+        <path d="M91.0 23.0 Q88.48 0.0 66.4 -3.0 Q54.88 -1.0 52.0 57.0" fill="none" stroke="#68687a" stroke-opacity=".45" stroke-width="0.9" stroke-linecap="round"/>
+        <path d="M91.0 29.0 Q86.08 6.0 59.4 6.0 Q45.48 8.0 42.0 65.0" fill="none" stroke="#68687a" stroke-opacity=".45" stroke-width="0.82" stroke-linecap="round"/>
+        <path d="M91.0 35.0 Q83.68 12.0 52.4 15.0 Q36.08 17.0 32.0 73.0" fill="none" stroke="#68687a" stroke-opacity=".45" stroke-width="0.74" stroke-linecap="round"/>
+        <path d="M91.0 41.0 Q81.28 18.0 45.4 24.0 Q26.68 26.0 22.0 81.0" fill="none" stroke="#68687a" stroke-opacity=".45" stroke-width="0.66" stroke-linecap="round"/>
+        <path d="M109.0 23.0 Q111.52 0.0 133.6 -3.0 Q145.12 -1.0 148.0 57.0" fill="none" stroke="#68687a" stroke-opacity=".45" stroke-width="0.9" stroke-linecap="round"/>
+        <path d="M109.0 29.0 Q113.92 6.0 140.6 6.0 Q154.52 8.0 158.0 65.0" fill="none" stroke="#68687a" stroke-opacity=".45" stroke-width="0.82" stroke-linecap="round"/>
+        <path d="M109.0 35.0 Q116.32 12.0 147.6 15.0 Q163.92 17.0 168.0 73.0" fill="none" stroke="#68687a" stroke-opacity=".45" stroke-width="0.74" stroke-linecap="round"/>
+        <path d="M109.0 41.0 Q118.72 18.0 154.6 24.0 Q173.32 26.0 178.0 81.0" fill="none" stroke="#68687a" stroke-opacity=".45" stroke-width="0.66" stroke-linecap="round"/>
+        <ellipse cx="100.0" cy="66.0" rx="27" ry="31" fill="url(#abd)" stroke="#1e0a0c" stroke-width="2"/>
+        <path d="M100.0 42.0 Q111.0 54.0 109.0 66.0 Q108.0 80.0 100.0 92.0 Q92.0 80.0 91.0 66.0 Q89.0 54.0 100.0 42.0Z" fill="#121216"/>
+        <ellipse cx="88.0" cy="50.0" rx="6" ry="9" fill="#fff" opacity=".28"/>
+        <ellipse cx="100.0" cy="30.0" rx="17" ry="14" fill="#202028"/>
+        <ellipse cx="89.0" cy="29.0" rx="3.2" ry="3.8" fill="#f0f0f5"/>
+        <ellipse cx="111.0" cy="29.0" rx="3.2" ry="3.8" fill="#f0f0f5"/>
+        <ellipse cx="95.5" cy="29.0" rx="2.2" ry="2.6" fill="#ebebf2"/>
+        <ellipse cx="104.5" cy="29.0" rx="2.2" ry="2.6" fill="#ebebf2"/>
+        <line x1="100.0" y1="0" x2="100.0" y2="22.0" stroke="#fff" stroke-opacity=".6" stroke-width="1.4"/>
+          </g>
+          <g id="charHanger" class="mark" transform="translate(-75 -18) scale(1.5)" style="display:none">
+            <path class="neck"  d="M50 12 L50 36"/>
+        <path class="hook"  d="M49.5 12 A5.5 5.5 0 0 1 59.45 8.77"/>
+        <path class="bar"   d="M10 74 Q22 44 50 36 Q78 44 90 74"/>
+        <path class="bar"   d="M10 74 L90 74"/>
+        <circle class="eye" cx="38.5" cy="53" r="4.2"/>
+        <circle class="eye" cx="61.5" cy="53" r="4.2"/>
+        <path class="smile" d="M40 61.5 Q50 69 60 61.5"/>
+          </g>
+        </g>
+      </g>
+
+      <!-- a floor companion: the cat, asleep in the corner until it has news -->
+      <g id="catGroup" style="display:none">
+        <g id="cat" transform="translate(140 286) scale(1.12)">
+          <ellipse cx="0" cy="0" rx="46" ry="27" fill="#8a6a4f"/>
+          <path d="M44 -4 Q74 -12 66 -36 Q62 -46 54 -42" fill="none" stroke="#8a6a4f" stroke-width="11" stroke-linecap="round" id="catTail"/>
+          <circle cx="-34" cy="-20" r="22" fill="#9a7858"/>
+          <path d="M-50 -34 L-54 -54 L-38 -44 Z" fill="#9a7858"/>
+          <path d="M-18 -36 L-12 -55 L-28 -47 Z" fill="#9a7858"/>
+          <g id="catEyesShut">
+            <path d="M-44 -20 q6 5 12 0" fill="none" stroke="#2b2119" stroke-width="2.6" stroke-linecap="round"/>
+            <path d="M-28 -20 q6 5 12 0" fill="none" stroke="#2b2119" stroke-width="2.6" stroke-linecap="round"/>
+          </g>
+          <g id="catEyesOpen" style="display:none">
+            <circle cx="-38" cy="-21" r="3.4" fill="#2b2119"/>
+            <circle cx="-22" cy="-21" r="3.4" fill="#2b2119"/>
+          </g>
+          <circle cx="-30" cy="-13" r="2.3" fill="#d68aa0"/>
+          <text id="catZ" x="-6" y="-48" font-size="19" fill="rgba(255,255,255,.55)" font-family="serif">z</text>
+        </g>
+      </g>
+    </svg>
+
+    <div class="balloon" id="balloon">
+      <span id="balloonText">Time to drink some water</span>
+      <span class="snooze">click me to snooze 5 min</span>
+    </div>
+    <div class="chip" id="chip">25:00<span class="track"><i id="chipFill"></i></span></div>
   </div>
-  <p class="req">Free · Apple Silicon (M1 or later) · macOS 14 Sonoma or later</p>
 
-  <h2>It remembers things for you</h2>
-  <p>A notification disappears before you have finished reading it. Instead, the thing you asked to be reminded about is written on a card the charm is holding — still there an hour later, still there after you switch Spaces.</p>
-  <p>It tucks itself away while you type and stays still while you work. That part is deliberate: something that sways all day teaches you to ignore it, and then it cannot tell you anything.</p>
-
-  <h2>Installing it</h2>
-  <ol>
-    <li>Download the zip above and double-click it.</li>
-    <li>Drag <strong>Hangabout.app</strong> into your <strong>Applications</strong> folder.</li>
-    <li>Double-click it. macOS will refuse the first time — see below.</li>
-  </ol>
-
-  <div class="note">
-    <p><strong>macOS will say it “cannot verify Hangabout is free of malware”.</strong></p>
-    <p>That is not a warning about this app. macOS says it about anything that has not been through Apple's $99/year notarization, and Hangabout is a hobby project.</p>
-    <p>To open it anyway: click <kbd>Done</kbd>, then go to <strong>System Settings → Privacy &amp; Security</strong>, scroll to the bottom, and click <kbd>Open Anyway</kbd>. Authenticate, confirm once more, and you are done — you only do this the first time.</p>
+  <div class="controls">
+    <button class="ctl" id="bRemind">Send a reminder</button>
+    <button class="ctl" id="bFlick">Give it a flick</button>
+    <button class="ctl" id="bFocus">Start a focus session</button>
+    <button class="ctl" id="bTuck" aria-pressed="false">Tuck away</button>
   </div>
 
-  <h2>Once it is running</h2>
-  <p>A charm appears hanging from the top-right of your screen, and a hanger icon appears in your menu bar. Everything lives in that menu — reminders, which companion is hanging there, and Quit. There is no Dock icon, by design.</p>
-  <ul>
-    <li><strong>Flick the charm</strong> with your cursor to make it swing.</li>
-    <li>Hold <kbd>⌥</kbd> and drag to slide it anywhere along the top of the screen.</li>
-    <li>To remove it: quit from the menu bar, then drag the app to the Trash. It leaves nothing behind.</li>
-  </ul>
+  <div class="pills">
+    <span class="lbl">Companion:</span>
+    <button class="ctl" data-char="spider" aria-pressed="true">Spider</button>
+    <button class="ctl" data-char="hanger" aria-pressed="false">The hanger</button>
+    <button class="ctl" data-char="cat" aria-pressed="false">Cat</button>
+  </div>
 
-  <footer>
-    Made by <a href="https://github.com/bhagyeshrangole">Bhagyesh Rangole</a> ·
-    <a href="https://github.com/bhagyeshrangole/hangabout-releases/releases">All versions</a>
-  </footer>
-
+  <input class="typebox" id="typebox" placeholder="Type in here — watch it get out of your way, then come back when you stop.">
+  <p class="hint">Move your cursor past it and it swings away from you. Drag it down and let go — the thread is elastic and it climbs back up.</p>
 </div>
 
+<main class="wrap">
+
+<section>
+  <h2 class="narrow">Reminders that wait until you are actually there</h2>
+  <p class="lede narrow">A repeating reminder counts <em>working</em> seconds, not wall-clock ones. Step away and the clock pauses instead of resetting — so a 30-minute water reminder can never go off while you are at lunch.</p>
+  <div class="narrow">
+    <div class="clocks">
+      <div class="clock ours">
+        <h3>Hangabout</h3>
+        <p class="who">counts time at the keyboard</p>
+        <div class="bar"><i id="barOurs"></i></div>
+        <p class="state" id="stateOurs">0s banked</p>
+      </div>
+      <div class="clock">
+        <h3>An ordinary timer</h3>
+        <p class="who">counts the wall clock</p>
+        <div class="bar"><i id="barThem"></i></div>
+        <p class="state" id="stateThem">0s elapsed</p>
+      </div>
+    </div>
+    <button class="ctl" id="bAway" aria-pressed="false">Step away from the desk</button>
+    <p class="hint">Press it and watch the two clocks disagree. That disagreement is the whole feature — it is why this reminder is still installed in a month.</p>
+    <p style="margin-top:22px">Banked time survives a restart, too. It is written to disk every minute, so quitting the app does not silently wipe your progress toward a break.</p>
+    <p>One-off alarms work the other way round, on the wall clock: <strong>Remind me in… → 2 hours</strong>, type what it should say, done. It fires whether you are at the desk or not, chimes, and deletes itself.</p>
+  </div>
+</section>
+
+<section>
+  <h2 class="narrow">A notification you cannot miss, and cannot lose</h2>
+  <p class="lede narrow">Banner notifications slide away while you are mid-sentence and end up in a tray you never open. Hangabout comes down the screen, swings to catch your eye, and then simply stays there holding the message until you deal with it.</p>
+  <div class="grid">
+    <div class="card"><h3>Click it to dismiss</h3><p>One click on the companion and the reminder is done.</p></div>
+    <div class="card"><h3>Click the balloon to snooze</h3><p>Five more minutes. The balloon says so in small type, because a snooze you have to discover is a snooze nobody uses.</p></div>
+    <div class="card"><h3>One at a time</h3><p>Anything else that comes due keeps its place in the queue and arrives once you have dealt with the first.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2 class="narrow">Focus sessions that do not become the distraction</h2>
+  <p class="lede narrow">Pick <strong>Focus → 25 minutes</strong> and a small countdown chip pins itself above the companion. Click the character to pause, click again to resume.</p>
+  <div class="narrow">
+    <p>The session deliberately <em>does not move the character at all</em>. An earlier version sank it down the screen as the time ran out, which was a nice idea and exactly wrong: it moved the one thing you were trying to ignore, on purpose, for half an hour.</p>
+    <p>Repeating reminders go quiet during a session. One-off alarms do not — an alarm is tied to a moment that passes, and swallowing one silently would be worse than the interruption. Working time still banks while they are muted, so a focus session never erases your progress toward a break.</p>
+  </div>
+</section>
+
+<section>
+  <h2 class="narrow">It knows when to disappear</h2>
+  <p class="lede narrow">The companion spends nearly all its time tucked under the top edge of the screen, and — more importantly — it <strong>stops moving</strong>.</p>
+  <div class="narrow">
+    <p>Something that sways all day teaches you to ignore it, and then it cannot tell you anything. Stillness is what gives the movement meaning, so there is no idle fidgeting while it is tucked away.</p>
+    <p><strong>Hide while typing</strong> pulls it completely out of sight whenever a key has been pressed in the last two and a half seconds. And the window it lives in passes every click straight through to whatever is underneath — it only becomes grabbable in the moment your cursor is actually on it, so a full-width invisible panel sits over your screen without ever eating a click.</p>
+  </div>
+</section>
+
+<section>
+  <h2 class="narrow">Pick who keeps you company</h2>
+  <p class="lede narrow">Six companions ship with the app, on two kinds of motion: some hang from a thread at the top of the screen, others stand on the floor and walk over when they have something to say.</p>
+  <div class="grid">
+    <div class="card"><h3>Spider</h3><p>Hangs from a thread. Drag it down and the silk stretches, then it hauls itself back up in pulls.</p></div>
+    <div class="card"><h3>Cat and Dog</h3><p>Asleep in a corner until there is news, then they get up and walk over. Both drawn in code.</p></div>
+    <div class="card"><h3>Iron Man and Tony Stark</h3><p>One stands on the floor and lights the thrusters only when he is going somewhere. The other idles out of the armour and suits up when there is something to do.</p></div>
+    <div class="card"><h3>Captain America</h3><p>Stands at ease, and throws the shield. It glances off two screen edges, buries itself in a third with a quiver, and comes home when the balloon does.</p></div>
+  </div>
+  <p class="hint" style="margin-top:18px">The menu only ever offers what makes sense: “give it a flick” means nothing to a man who flies, so it is not offered to him.</p>
+  <p class="narrow" style="margin-top:22px">You can add your own, too. Drop a folder of images and a small <code>character.json</code> into the app’s Characters folder and it appears in the menu alongside the rest — no code, no rebuild.</p>
+</section>
+
+<section>
+  <h2 class="narrow">Getting it running</h2>
+  <div class="narrow">
+    <ol>
+      <li>Download the zip and double-click it.</li>
+      <li>Drag <strong>Hangabout.app</strong> into your <strong>Applications</strong> folder.</li>
+      <li>Double-click it. macOS will refuse the first time — see below.</li>
+    </ol>
+    <div class="note">
+      <p><strong>macOS will say it “cannot verify Hangabout is free of malware”.</strong></p>
+      <p>That is not a warning about this app. macOS says it about anything that has not been through Apple’s $99/year notarization, and Hangabout is a hobby project.</p>
+      <p>Click <kbd>Done</kbd>, then open <strong>System Settings → Privacy &amp; Security</strong>, scroll to the bottom and click <kbd>Open Anyway</kbd>. Authenticate, confirm once more, and that is it — only ever the first time.</p>
+    </div>
+    <p style="margin-top:18px">A companion appears at the top of your screen and a hanger icon appears in your menu bar. Everything lives in that menu. There is no Dock icon, by design. To remove it: quit from the menu bar and drag the app to the Trash — it leaves nothing behind.</p>
+  </div>
+  <p class="cta-end" style="margin-top:34px">
+    <a class="btn" href="https://github.com/bhagyeshrangole/hangabout-releases/releases/latest/download/Hangabout.zip">⬇&nbsp; Download for Mac</a>
+  </p>
+  <p class="req cta-end">Free · Apple Silicon · macOS 14 Sonoma or later</p>
+</section>
+
+</main>
+
+<footer>
+  Made by <a href="https://github.com/bhagyeshrangole">Bhagyesh Rangole</a> ·
+  <a href="https://github.com/bhagyeshrangole/hangabout-releases/releases">All versions</a>
+</footer>
+
 <script>
-  // Flick the charm and it swings, then settles back into the idle sway.
-  const hang = document.querySelector('.hang');
-  const flick = () => {
-    hang.classList.remove('flick');
-    void hang.offsetWidth;            // restart the animation mid-flight
-    hang.classList.add('flick');
+(() => {
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const $ = id => document.getElementById(id);
+  const screenEl = $('screen'), stage = $('stage');
+  const hangGroup = $('hangGroup'), cord = $('cord'), holder = $('charHolder');
+  const catGroup = $('catGroup'), cat = $('cat');
+  const balloon = $('balloon'), chip = $('chip'), chipFill = $('chipFill');
+
+  const VW = 900, VH = 340;          // the stage's own coordinate space
+  const PIN_X = 610, PIN_Y = 30;     // where the thread is pinned
+  const TUCKED = 66, DOWN = 196;     // cord lengths, in stage units
+
+  // Same model as Pendulum.swift: an angle, a velocity, and a cord length that
+  // sets the period. A long pendulum swings slower and wider than a short one,
+  // which is why the flick is expressed as an angle, not a raw shove.
+  const S = {
+    angle: 0, vel: 0, cord: TUCKED, cordTarget: TUCKED,
+    kind: 'spider', tucked: false, typing: 0, paused: false
   };
-  hang.addEventListener('click', flick);
-  hang.addEventListener('keydown', e => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flick(); }
+
+  const charmXY = () => ({
+    x: PIN_X + Math.sin(S.angle) * S.cord,
+    y: PIN_Y + Math.cos(S.angle) * S.cord
   });
-  hang.addEventListener('animationend', e => {
-    if (e.animationName === 'flick') hang.classList.remove('flick');
+
+  function impulse(angleWanted) {
+    // Scale the push to the cord length so the swing *looks* the same however
+    // far down it is hanging.
+    S.vel += angleWanted * Math.sqrt(900 / Math.max(60, S.cord)) * (Math.random() < .5 ? -1 : 1);
+  }
+
+  let last = performance.now();
+  function frame(now) {
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    const L = Math.max(60, S.cord);
+    S.vel += -(2600 / L) * Math.sin(S.angle) * dt;   // gravity
+    S.vel *= Math.pow(0.5, dt / 1.9);                 // air, as a half-life
+    S.angle += S.vel * dt;
+    S.cord += (S.cordTarget - S.cord) * (1 - Math.pow(0.004, dt));
+
+    cord.setAttribute('y2', S.cord.toFixed(1));
+    holder.setAttribute('transform', `translate(0 ${S.cord.toFixed(1)})`);
+    hangGroup.setAttribute('transform',
+      `translate(${PIN_X} ${PIN_Y}) rotate(${(S.angle * 180 / Math.PI).toFixed(2)})`);
+
+    if (balloon.classList.contains('show') && S.kind !== 'cat') {
+      const p = charmXY();
+      place(balloon, p.x, p.y - 104);
+    }
+    if (chip.classList.contains('show') && S.kind !== 'cat') {
+      const p = charmXY();
+      // a balloon is taller than the chip, so the chip steps out of its way
+      place(chip, p.x, p.y - (balloon.classList.contains('show') ? 168 : 72));
+    }
+    requestAnimationFrame(frame);
+  }
+
+  // stage units -> CSS percentages, so it stays put at any screen width
+  function place(el, x, y) {
+    el.style.left = (x / VW * 100) + '%';
+    el.style.top  = (y / VH * 100) + '%';
+  }
+
+  /* ---- the cursor push ---- */
+  let lastPt = null;
+  screenEl.addEventListener('mousemove', e => {
+    if (S.kind === 'cat') return;
+    const r = screenEl.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width * VW;
+    const y = (e.clientY - r.top) / r.height * VH;
+    if (lastPt) {
+      const speed = Math.hypot(x - lastPt.x, y - lastPt.y);
+      const p = charmXY();
+      const d = Math.hypot(x - p.x, y - p.y);
+      // Only a *moving* cursor pushes. Hovering does nothing, so you can still
+      // stop and grab it.
+      if (d < 190 && speed > 1.5) {
+        const away = Math.sign(p.x - x) || 1;
+        S.vel += away * Math.min(speed, 40) * (1 - d / 190) * 0.0026;
+      }
+    }
+    lastPt = { x, y };
   });
+  screenEl.addEventListener('mouseleave', () => lastPt = null);
+
+  /* ---- dragging: position is fixed, the drop is elastic ---- */
+  let dragging = false;
+  screenEl.addEventListener('pointerdown', e => {
+    if (S.kind === 'cat') return;
+    dragging = true; screenEl.setPointerCapture(e.pointerId);
+  });
+  screenEl.addEventListener('pointermove', e => {
+    if (!dragging) return;
+    const r = screenEl.getBoundingClientRect();
+    const y = (e.clientY - r.top) / r.height * VH;
+    const beyond = Math.max(0, y - PIN_Y - DOWN);
+    // Eases toward a limit rather than snapping out to arm's length.
+    S.cordTarget = DOWN + 110 * (1 - Math.exp(-beyond / 110));
+  });
+  const endDrag = () => { if (dragging) { dragging = false; settle(); } };
+  screenEl.addEventListener('pointerup', endDrag);
+  screenEl.addEventListener('pointercancel', endDrag);
+
+  /* ---- the things it does ---- */
+  const LINES = ['Time to drink some water', 'Stand up and stretch',
+                 'Look away for twenty seconds', 'Break time'];
+  let msg = 0, balloonTimer = null;
+
+  function remind() {
+    clearTimeout(balloonTimer);
+    $('balloonText').textContent = LINES[msg++ % LINES.length];
+    if (S.kind === 'cat') {
+      // A floor companion wakes up and walks over to say it.
+      $('catEyesShut').style.display = 'none';
+      $('catEyesOpen').style.display = '';
+      $('catZ').style.display = 'none';
+      cat.style.transition = 'transform 1.9s cubic-bezier(.4,0,.3,1)';
+      cat.setAttribute('transform', 'translate(430 286) scale(1.12)');
+      setTimeout(() => { balloon.classList.add('show'); place(balloon, 430, 178); }, 1500);
+    } else {
+      S.tucked = false; $('bTuck').setAttribute('aria-pressed', 'false');
+      S.cordTarget = DOWN;
+      impulse(0.30);                      // a reminder brings it down *and* sets it swinging
+      setTimeout(() => balloon.classList.add('show'), 420);
+    }
+    balloonTimer = setTimeout(settleAll, 9000);
+  }
+
+  function settle() {
+    if (S.kind === 'cat') return;
+    S.cordTarget = balloon.classList.contains('show') ? DOWN : (S.tucked ? TUCKED : TUCKED);
+  }
+  function settleAll() {
+    balloon.classList.remove('show');
+    if (S.kind === 'cat') {
+      cat.setAttribute('transform', 'translate(140 286) scale(1.12)');
+      setTimeout(() => {
+        $('catEyesShut').style.display = ''; $('catEyesOpen').style.display = 'none';
+        $('catZ').style.display = '';
+      }, 1900);
+    } else {
+      S.cordTarget = TUCKED;
+    }
+  }
+
+  balloon.addEventListener('click', () => {           // the balloon is the snooze button
+    $('balloonText').textContent = 'Snoozed — see you in 5';
+    setTimeout(settleAll, 1100);
+  });
+  screenEl.addEventListener('click', () => {           // clicking the character dismisses
+    if (balloon.classList.contains('show')) settleAll();
+  });
+
+  $('bRemind').onclick = remind;
+  $('bFlick').onclick = () => { if (S.kind !== 'cat') { S.cordTarget = Math.max(S.cordTarget, 140); impulse(0.42); } };
+  $('bTuck').onclick = e => {
+    S.tucked = !S.tucked;
+    e.currentTarget.setAttribute('aria-pressed', String(S.tucked));
+    S.cordTarget = S.tucked ? 26 : TUCKED;
+  };
+
+  /* ---- focus session ---- */
+  let focusTimer = null;
+  $('bFocus').onclick = () => {
+    clearInterval(focusTimer);
+    chip.classList.add('show');
+    let left = 25 * 60, total = left;
+    const tick = () => {
+      left -= 18;                                 // sped up so you can see it work
+      if (left <= 0) { clearInterval(focusTimer); chip.classList.remove('show'); remind(); return; }
+      const m = Math.floor(left / 60), s = left % 60;
+      chip.firstChild.textContent = `${m}:${String(s).padStart(2, '0')}`;
+      chipFill.style.width = (100 - left / total * 100) + '%';
+    };
+    tick(); focusTimer = setInterval(tick, 120);
+  };
+
+  /* ---- typing hides it ---- */
+  let typeTimer = null;
+  $('typebox').addEventListener('input', () => {
+    clearTimeout(typeTimer);
+    if (S.kind !== 'cat') S.cordTarget = 10;        // completely out of sight
+    typeTimer = setTimeout(() => {                   // 2.5s, same as the app
+      if (S.kind !== 'cat') S.cordTarget = S.tucked ? 26 : TUCKED;
+    }, 2500);
+  });
+
+  /* ---- switching companion ---- */
+  document.querySelectorAll('[data-char]').forEach(b => b.onclick = () => {
+    document.querySelectorAll('[data-char]').forEach(o => o.setAttribute('aria-pressed', String(o === b)));
+    S.kind = b.dataset.char;
+    settleAll();
+    const hanging = S.kind !== 'cat';
+    hangGroup.style.display = hanging ? '' : 'none';
+    catGroup.style.display = hanging ? 'none' : '';
+    $('charSpider').style.display = S.kind === 'spider' ? '' : 'none';
+    $('charHanger').style.display = S.kind === 'hanger' ? '' : 'none';
+    if (hanging) { S.cordTarget = TUCKED; impulse(0.18); }
+  });
+
+  /* ---- the menu-bar clock, because an empty one looks broken ---- */
+  const tickClock = () => $('clock').textContent =
+    new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  tickClock(); setInterval(tickClock, 10000);
+
+  if (!reduced) requestAnimationFrame(frame);
+  else { cord.setAttribute('y2', TUCKED); holder.setAttribute('transform', `translate(0 ${TUCKED})`);
+         hangGroup.setAttribute('transform', `translate(${PIN_X} ${PIN_Y})`); }
+
+  /* ---- the two clocks, further down the page ---- */
+  let ours = 0, them = 0, away = false, started = false;
+  const GOAL = 30;
+  const bOurs = $('barOurs'), bThem = $('barThem');
+  const sOurs = $('stateOurs'), sThem = $('stateThem');
+  $('bAway').onclick = e => {
+    away = !away;
+    e.currentTarget.setAttribute('aria-pressed', String(away));
+    e.currentTarget.textContent = away ? 'Come back to the desk' : 'Step away from the desk';
+    if (!started) { started = true; setInterval(clockTick, 200); }
+  };
+  function clockTick() {
+    if (!away) ours = Math.min(GOAL, ours + 1);
+    them = Math.min(GOAL, them + 1);
+    bOurs.style.width = ours / GOAL * 100 + '%';
+    bThem.style.width = them / GOAL * 100 + '%';
+    sOurs.innerHTML = ours >= GOAL ? '<span class="fired">Reminder fires — and you are here to see it</span>'
+                                   : (away ? 'paused — you are not at the keyboard' : ours + 's banked');
+    sThem.innerHTML = them >= GOAL ? '<span class="fired">Fires into an empty chair</span>'
+                                   : them + 's elapsed';
+  }
+})();
 </script>
 </body>
 </html>
