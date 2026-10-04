@@ -38,21 +38,28 @@
 
   /* The cord and charm, hanging from the top of the page the way the app
      hangs from the top of the screen. */
-  /* The charm hangs from the very top of the page, the way the app hangs from
-     the very top of your screen. Click it and it swings, same as the app. */
+  /* The hanger hangs from the very top of the page, the way the app hangs
+     from the very top of your screen. Click it and it swings, same as the app. */
   .hang {
     display: block;
     margin: 0 auto;
-    width: 240px; height: 330px;
+    width: 240px; height: 272px;
+    max-width: 100%;
     overflow: visible;
     cursor: grab;
     outline: none;
   }
   .hang:active { cursor: grabbing; }
   .hang .cord { stroke: var(--muted); stroke-width: 2.5; }
-  .hang .charm { fill: var(--accent); }
-  .hang .glint { fill: var(--bg); opacity: .5; }
-  .hang:focus-visible .charm { stroke: var(--ink); stroke-width: 3; }
+
+  /* Stroke widths are in the mark's own 100-unit space, the same fractions
+     Mark.swift uses, so the scale factor carries them automatically. */
+  .hang .mark path { fill: none; stroke: var(--accent); stroke-linecap: round; stroke-linejoin: round; }
+  .hang .neck, .hang .hook { stroke-width: 6.2; }
+  .hang .bar   { stroke-width: 7.5; }
+  .hang .smile { stroke-width: 5; }
+  .hang .eye   { fill: var(--accent); }
+  .hang:focus-visible .mark { stroke: var(--ink); }
 
   @media (prefers-reduced-motion: no-preference) {
     /* Anchored at the top of the cord, so rotating the group *is* the swing —
@@ -122,13 +129,23 @@
 <body>
 <div class="wrap">
 
-  <svg class="hang" viewBox="0 0 240 330" role="img"
-       aria-label="A round charm hanging from a cord. Click it to make it swing."
+  <svg class="hang" viewBox="0 0 240 272" role="img"
+       aria-label="The Hangabout coat hanger, with a face, hanging from a cord. Click it to make it swing."
        tabindex="0">
     <g class="swing">
-      <line class="cord" x1="120" y1="0" x2="120" y2="222"/>
-      <circle class="charm" cx="120" cy="266" r="44"/>
-      <circle class="glint" cx="104" cy="250" r="12"/>
+      <line class="cord" x1="120" y1="0" x2="120" y2="157"/>
+      <!-- The same hanger Mark.swift draws for the app icon and menu bar,
+           in the same proportions. Swift works in y-up coordinates and SVG
+           in y-down, so each y here is (100 - the Swift value). -->
+      <g class="mark" transform="translate(50 140) scale(1.4)">
+        <path class="neck"  d="M50 12 L50 36"/>
+        <path class="hook"  d="M49.5 12 A5.5 5.5 0 0 1 59.45 8.77"/>
+        <path class="bar"   d="M10 74 Q22 44 50 36 Q78 44 90 74"/>
+        <path class="bar"   d="M10 74 L90 74"/>
+        <circle class="eye" cx="38.5" cy="53" r="4.2"/>
+        <circle class="eye" cx="61.5" cy="53" r="4.2"/>
+        <path class="smile" d="M40 61.5 Q50 69 60 61.5"/>
+      </g>
     </g>
   </svg>
 
