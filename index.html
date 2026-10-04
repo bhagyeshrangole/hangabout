@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hangabout — a lucky charm for your Mac screen</title>
+<meta name="description" content="A lucky charm that hangs from the top of your Mac screen. It sways while you work, ignores every click, and holds your reminders on a card.">
+<style>
+  :root {
+    --bg: #faf7f2;
+    --ink: #1c1917;
+    --muted: #6b625a;
+    --line: #e4ddd3;
+    --accent: #b4432c;
+    --accent-ink: #fff;
+    --card: #fff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16140f;
+      --ink: #f0ebe3;
+      --muted: #9c9288;
+      --line: #2e2a23;
+      --accent: #e06a4e;
+      --accent-ink: #16140f;
+      --card: #1e1b15;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.65 ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 620px; margin: 0 auto; padding: 0 24px 80px; }
+
+  /* The cord and charm, hanging from the top of the page the way the app
+     hangs from the top of the screen. */
+  .hang { display: block; margin: 0 auto; }
+  .hang .cord { stroke: var(--muted); stroke-width: 1.5; }
+  .hang .charm { fill: var(--accent); }
+  .hang .glint { fill: var(--bg); opacity: .55; }
+  @media (prefers-reduced-motion: no-preference) {
+    .swing { transform-origin: 50px 0; animation: sway 4.5s ease-in-out infinite; }
+    @keyframes sway {
+      0%, 100% { transform: rotate(-7deg); }
+      50%      { transform: rotate(7deg); }
+    }
+  }
+
+  h1 { font-size: 2.6rem; line-height: 1.1; margin: 26px 0 10px; letter-spacing: -.02em; text-align: center; }
+  .tag { color: var(--muted); font-size: 1.15rem; text-align: center; margin: 0 auto 38px; max-width: 30rem; }
+
+  .cta { text-align: center; margin-bottom: 14px; }
+  .btn {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--accent-ink);
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 15px 34px;
+    border-radius: 11px;
+    transition: transform .12s ease, filter .12s ease;
+  }
+  .btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+  .req { color: var(--muted); font-size: .9rem; text-align: center; margin: 0 0 46px; }
+
+  h2 { font-size: 1.15rem; margin: 40px 0 12px; letter-spacing: -.01em; }
+  p { margin: 0 0 14px; }
+  ol, ul { margin: 0 0 14px; padding-left: 22px; }
+  li { margin-bottom: 7px; }
+  kbd {
+    font: inherit; font-size: .92em; font-weight: 600;
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 5px; padding: 1px 6px;
+  }
+  .note {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin: 0 0 14px;
+  }
+  .note p:last-child { margin-bottom: 0; }
+  footer {
+    margin-top: 56px; padding-top: 22px;
+    border-top: 1px solid var(--line);
+    color: var(--muted); font-size: .88rem; text-align: center;
+  }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <svg class="hang" width="100" height="150" viewBox="0 0 100 150" aria-hidden="true">
+    <g class="swing">
+      <line class="cord" x1="50" y1="0" x2="50" y2="86"/>
+      <circle class="charm" cx="50" cy="106" r="20"/>
+      <circle class="glint" cx="43" cy="99" r="5.5"/>
+    </g>
+  </svg>
+
+  <h1>Hangabout</h1>
+  <p class="tag">A lucky charm that hangs from the top of your Mac screen. It sways while you work, ignores every click, and swings when you flick it.</p>
+
+  <div class="cta">
+    <a class="btn" href="https://github.com/bhagyeshrangole/hangabout-releases/releases/latest/download/Hangabout.zip">⬇&nbsp; Download for Mac</a>
+  </div>
+  <p class="req">Free · Apple Silicon (M1 or later) · macOS 14 Sonoma or later</p>
+
+  <h2>It remembers things for you</h2>
+  <p>A notification disappears before you have finished reading it. Instead, the thing you asked to be reminded about is written on a card the charm is holding — still there an hour later, still there after you switch Spaces.</p>
+  <p>It tucks itself away while you type and stays still while you work. That part is deliberate: something that sways all day teaches you to ignore it, and then it cannot tell you anything.</p>
+
+  <h2>Installing it</h2>
+  <ol>
+    <li>Download the zip above and double-click it.</li>
+    <li>Drag <strong>Hangabout.app</strong> into your <strong>Applications</strong> folder.</li>
+    <li>Double-click it. macOS will refuse the first time — see below.</li>
+  </ol>
+
+  <div class="note">
+    <p><strong>macOS will say it “cannot verify Hangabout is free of malware”.</strong></p>
+    <p>That is not a warning about this app. macOS says it about anything that has not been through Apple's $99/year notarization, and Hangabout is a hobby project.</p>
+    <p>To open it anyway: click <kbd>Done</kbd>, then go to <strong>System Settings → Privacy &amp; Security</strong>, scroll to the bottom, and click <kbd>Open Anyway</kbd>. Authenticate, confirm once more, and you are done — you only do this the first time.</p>
+  </div>
+
+  <h2>Once it is running</h2>
+  <p>A charm appears hanging from the top-right of your screen, and a hanger icon appears in your menu bar. Everything lives in that menu — reminders, which companion is hanging there, and Quit. There is no Dock icon, by design.</p>
+  <ul>
+    <li><strong>Flick the charm</strong> with your cursor to make it swing.</li>
+    <li>Hold <kbd>⌥</kbd> and drag to slide it anywhere along the top of the screen.</li>
+    <li>To remove it: quit from the menu bar, then drag the app to the Trash. It leaves nothing behind.</li>
+  </ul>
+
+  <footer>
+    Made by <a href="https://github.com/bhagyeshrangole">Bhagyesh Rangole</a> ·
+    <a href="https://github.com/bhagyeshrangole/hangabout-releases/releases">All versions</a>
+  </footer>
+
+</div>
+</body>
+</html>
