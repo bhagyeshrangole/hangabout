@@ -18,9 +18,12 @@ Apple M-something, you are good. If it says Intel, this one is not for you.
 
 ## Download
 
-1. Go to [**Releases**](../../releases) and click **Hangabout.zip** under Assets.
-2. Double-click the downloaded zip. `Hangabout.app` appears next to it.
-3. Drag `Hangabout.app` into your **Applications** folder.
+### [⬇ Download Hangabout](https://github.com/bhagyeshrangole/hangabout-releases/releases/latest/download/Hangabout.zip)
+
+That link always gives you the newest version. Then:
+
+1. Double-click the downloaded zip. `Hangabout.app` appears next to it.
+2. Drag `Hangabout.app` into your **Applications** folder.
 
 ## First launch — please read this part
 
