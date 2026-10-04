@@ -38,19 +38,44 @@
 
   /* The cord and charm, hanging from the top of the page the way the app
      hangs from the top of the screen. */
-  .hang { display: block; margin: 0 auto; }
-  .hang .cord { stroke: var(--muted); stroke-width: 1.5; }
+  /* The charm hangs from the very top of the page, the way the app hangs from
+     the very top of your screen. Click it and it swings, same as the app. */
+  .hang {
+    display: block;
+    margin: 0 auto;
+    width: 240px; height: 330px;
+    overflow: visible;
+    cursor: grab;
+    outline: none;
+  }
+  .hang:active { cursor: grabbing; }
+  .hang .cord { stroke: var(--muted); stroke-width: 2.5; }
   .hang .charm { fill: var(--accent); }
-  .hang .glint { fill: var(--bg); opacity: .55; }
+  .hang .glint { fill: var(--bg); opacity: .5; }
+  .hang:focus-visible .charm { stroke: var(--ink); stroke-width: 3; }
+
   @media (prefers-reduced-motion: no-preference) {
-    .swing { transform-origin: 50px 0; animation: sway 4.5s ease-in-out infinite; }
+    /* Anchored at the top of the cord, so rotating the group *is* the swing —
+       the same trick the app plays with a CALayer anchor point. */
+    .swing { transform-origin: 120px 0; animation: sway 5s ease-in-out infinite; }
     @keyframes sway {
-      0%, 100% { transform: rotate(-7deg); }
-      50%      { transform: rotate(7deg); }
+      0%, 100% { transform: rotate(-6deg); }
+      50%      { transform: rotate(6deg); }
+    }
+    /* A flick: a big swing that loses energy and settles back to the idle sway. */
+    .hang.flick .swing { animation: flick 2.4s cubic-bezier(.33,0,.5,1) forwards; }
+    @keyframes flick {
+      0%   { transform: rotate(0deg); }
+      12%  { transform: rotate(26deg); }
+      30%  { transform: rotate(-19deg); }
+      48%  { transform: rotate(13deg); }
+      65%  { transform: rotate(-8deg); }
+      82%  { transform: rotate(5deg); }
+      100% { transform: rotate(-6deg); }
     }
   }
 
-  h1 { font-size: 2.6rem; line-height: 1.1; margin: 26px 0 10px; letter-spacing: -.02em; text-align: center; }
+  h1 { font-size: 2.6rem; line-height: 1.1; margin: 10px 0 10px; letter-spacing: -.02em; text-align: center; }
   .tag { color: var(--muted); font-size: 1.15rem; text-align: center; margin: 0 auto 38px; max-width: 30rem; }
 
   .cta { text-align: center; margin-bottom: 14px; }
@@ -97,11 +122,13 @@
 <body>
 <div class="wrap">
 
-  <svg class="hang" width="100" height="150" viewBox="0 0 100 150" aria-hidden="true">
+  <svg class="hang" viewBox="0 0 240 330" role="img"
+       aria-label="A round charm hanging from a cord. Click it to make it swing."
+       tabindex="0">
     <g class="swing">
-      <line class="cord" x1="50" y1="0" x2="50" y2="86"/>
-      <circle class="charm" cx="50" cy="106" r="20"/>
-      <circle class="glint" cx="43" cy="99" r="5.5"/>
+      <line class="cord" x1="120" y1="0" x2="120" y2="222"/>
+      <circle class="charm" cx="120" cy="266" r="44"/>
+      <circle class="glint" cx="104" cy="250" r="12"/>
     </g>
   </svg>
 
@@ -144,5 +171,22 @@
   </footer>
 
 </div>
+
+<script>
+  // Flick the charm and it swings, then settles back into the idle sway.
+  const hang = document.querySelector('.hang');
+  const flick = () => {
+    hang.classList.remove('flick');
+    void hang.offsetWidth;            // restart the animation mid-flight
+    hang.classList.add('flick');
+  };
+  hang.addEventListener('click', flick);
+  hang.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flick(); }
+  });
+  hang.addEventListener('animationend', e => {
+    if (e.animationName === 'flick') hang.classList.remove('flick');
+  });
+</script>
 </body>
 </html>
