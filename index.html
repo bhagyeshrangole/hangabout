@@ -3,643 +3,634 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hangabout — a companion for the top of your Mac screen</title>
-<meta name="description" content="A companion that hangs from the top of your Mac screen and makes sure you actually see your reminders. Free for macOS.">
+<title>Hangabout — the reminder you cannot miss</title>
+<meta name="description" content="A companion that hangs from the top of your Mac screen, waits until you are actually at the keyboard, and holds your reminder until you deal with it. Free for macOS.">
 <meta property="og:title" content="Hangabout">
 <meta property="og:description" content="A companion that hangs from the top of your Mac screen and makes sure you actually see your reminders.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #faf7f2;  --ink: #1c1917;  --muted: #6b625a;
-    --line: #e4ddd3; --card: #fff;
-    --accent: #b4432c; --accent-ink: #fff;
-    --sky-a: #293357; --sky-b: #141a2e; --sky-ink: #fafbff;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #14120e;  --ink: #f0ebe3;  --muted: #9c9288;
-      --line: #2e2a23; --card: #1e1b15;
-      --accent: #e06a4e; --accent-ink: #14120e;
-    }
-  }
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    margin: 0; background: var(--bg); color: var(--ink);
-    font: 16px/1.65 ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;
-  }
-  .wrap { max-width: 920px; margin: 0 auto; padding: 0 24px; }
-  .narrow { max-width: 640px; margin-left: auto; margin-right: auto; }
-  a { color: var(--accent); }
-  h1, h2, h3 { letter-spacing: -.02em; }
+:root{
+  --night:#0E1424; --night-2:#161E36; --night-3:#223055;
+  --orange:#F97316; --amber:#FFC43D; --ink:#0B0F1C;
+  --text:#EEF2FF; --dim:#9AA6C9;
+  --glass:rgba(255,255,255,.055); --edge:rgba(255,255,255,.14);
+  --display:"Fredoka", ui-rounded, system-ui, sans-serif;
+  --body:"Nunito", ui-sans-serif, -apple-system, system-ui, sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--night);color:var(--text);
+  font:17px/1.6 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+/* depth behind everything: two soft light pools, no flat field */
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(60vw 60vw at 78% 8%, rgba(249,115,22,.22), transparent 62%),
+    radial-gradient(52vw 52vw at 12% 92%, rgba(37,99,235,.16), transparent 64%);
+}
+h1,h2,h3,.display{font-family:var(--display);font-weight:700;line-height:1;letter-spacing:-.02em;margin:0}
+a{color:inherit}
+button,a{cursor:pointer}
+:focus-visible{outline:3px solid var(--amber);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1200px;margin:0 auto;padding:0 28px;position:relative;z-index:2}
+.screen{min-height:100svh;display:flex;align-items:center;position:relative}
 
-  /* ---------- hero ---------- */
-  .hero { text-align: center; padding-bottom: 20px; }
-  .hero-hang { display: block; margin: 0 auto; width: 210px; height: 250px; overflow: visible; }
-  .hero-hang .cord { stroke: var(--muted); stroke-width: 2.4; }
-  .mark path { fill: none; stroke: var(--accent); stroke-linecap: round; stroke-linejoin: round; }
-  .mark .neck, .mark .hook { stroke-width: 6.2; }
-  .mark .bar { stroke-width: 7.5; }
-  .mark .smile { stroke-width: 5; }
-  .mark .eye { fill: var(--accent); }
-  @media (prefers-reduced-motion: no-preference) {
-    .hero-hang .swing { transform-origin: 105px 0; animation: sway 5s ease-in-out infinite; }
-    @keyframes sway { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
-  }
-  h1 { font-size: 3.1rem; line-height: 1.05; margin: 14px 0 12px; }
-  .tag { font-size: 1.2rem; color: var(--muted); max-width: 30rem; margin: 0 auto 32px; }
-  .btn {
-    display: inline-block; background: var(--accent); color: var(--accent-ink);
-    text-decoration: none; font-size: 1.08rem; font-weight: 600;
-    padding: 15px 34px; border-radius: 11px; border: 0; cursor: pointer;
-    transition: transform .12s ease, filter .12s ease;
-  }
-  .btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
-  .req { color: var(--muted); font-size: .9rem; margin: 14px 0 0; }
+/* ---------- companion layers ---------- */
+#scene{position:fixed;inset:0;width:100vw;height:100vh;z-index:3;pointer-events:none;display:none}
+#scene.on{display:block}
+#rig{position:fixed;inset:0;width:100vw;height:100vh;z-index:3;pointer-events:none;overflow:visible}
+#rig .cord{stroke:#E6ECFF;stroke-width:2.6}
+#rig.is3d #cSpider,#rig.is3d #cord{display:none}
+#grab{pointer-events:auto;cursor:grab;fill:transparent}
+#grab:active{cursor:grabbing}
+#balloon{
+  position:fixed;z-index:6;max-width:min(330px,72vw);
+  background:#FFFBF0;color:#0B0F1C;border-radius:18px;
+  box-shadow:0 26px 60px rgba(0,0,0,.55),0 2px 0 rgba(255,255,255,.6) inset;
+  padding:14px 18px 12px;font-family:var(--display);font-weight:600;font-size:16.5px;line-height:1.3;
+  opacity:0;transform:translate(-50%,14px) scale(.9);transform-origin:50% 100%;
+  transition:opacity .2s ease,transform .3s cubic-bezier(.2,1.5,.45,1);pointer-events:none;
+}
+#balloon.show{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto}
+#balloon .sub{display:block;margin-top:6px;font-family:var(--body);font-weight:700;font-size:11.5px;
+  text-transform:uppercase;letter-spacing:.09em;color:#8A7F6B}
+#balloon::after{content:"";position:absolute;left:50%;bottom:-8px;width:18px;height:18px;
+  background:#FFFBF0;transform:translateX(-50%) rotate(45deg);border-radius:0 0 4px 0}
+#chip{position:fixed;z-index:6;background:rgba(11,15,28,.82);color:#fff;
+  border:1px solid var(--edge);border-radius:14px;backdrop-filter:blur(12px);
+  padding:8px 14px 10px;font-family:var(--display);font-weight:600;font-size:15px;
+  font-variant-numeric:tabular-nums;box-shadow:0 18px 40px rgba(0,0,0,.5);
+  opacity:0;transform:translate(-50%,6px);transition:opacity .2s,transform .2s;pointer-events:none}
+#chip.show{opacity:1;transform:translate(-50%,0)}
+#chip .track{display:block;height:4px;margin-top:7px;border-radius:3px;background:rgba(255,255,255,.2)}
+#chip .track i{display:block;height:100%;border-radius:3px;background:var(--orange);width:0}
 
-  /* ---------- the demo ---------- */
-  .demo { margin: 60px 0 28px; }
-  .screen {
-    position: relative; width: 100%; aspect-ratio: 900 / 340;
-    background: linear-gradient(var(--sky-a), var(--sky-b));
-    border-radius: 14px; overflow: hidden;
-    box-shadow: 0 18px 44px rgba(0,0,0,.26);
-    cursor: crosshair; user-select: none;
-  }
-  .menubar {
-    position: absolute; inset: 0 0 auto 0; height: 7.5%;
-    background: rgba(255,255,255,.09);
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 14px; color: rgba(255,255,255,.72);
-    font-size: clamp(9px, 1.35vw, 13px); z-index: 3; pointer-events: none;
-  }
-  .menubar .right { display: flex; align-items: center; gap: 10px; }
-  .menubar svg { width: 15px; height: 15px; display: block; }
-  .menubar .mark path { stroke: rgba(255,255,255,.85); }
-  .menubar .mark .eye { fill: rgba(255,255,255,.85); }
-  #stage { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; }
-  #stage .cord { stroke: rgba(255,255,255,.5); stroke-width: 2; }
-  #stage .mark path { stroke: #f5a623; }
-  #stage .mark .eye { fill: #f5a623; }
+/* ---------- progress ---------- */
+#prog{position:fixed;inset:0 auto auto 0;height:3px;width:100%;z-index:20;background:transparent}
+#prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--orange),var(--amber))}
 
-  /* comic balloon, same recipe as the app: cream fill, heavy outline,
-     hard offset shadow, uppercase casual face */
-  .balloon {
-    position: absolute; z-index: 4; max-width: 46%;
-    background: #fdf6e3; color: #16140f;
-    border: 3px solid #16140f; border-radius: 14px;
-    box-shadow: 5px 5px 0 #16140f;
-    padding: 11px 15px 9px;
-    font-family: "Comic Sans MS", "Chalkboard SE", "Marker Felt", cursive;
-    text-transform: uppercase; font-size: clamp(11px, 1.6vw, 16px); line-height: 1.3;
-    opacity: 0; transform: translate(-50%, 6px) scale(.9); transform-origin: 50% 100%; z-index: 6;
-    transition: opacity .18s ease, transform .18s cubic-bezier(.2,1.4,.5,1);
-    pointer-events: none; cursor: pointer;
-  }
-  .balloon.show { opacity: 1; transform: translate(-50%, 0) scale(1); pointer-events: auto; }
-  .balloon .snooze { display: block; margin-top: 5px; font-size: .74em; opacity: .62; text-transform: none; }
-  .balloon::after {
-    content: ""; position: absolute; left: 50%; bottom: -13px; width: 16px; height: 16px;
-    background: #fdf6e3; border-right: 3px solid #16140f; border-bottom: 3px solid #16140f;
-    transform: translateX(-50%) rotate(45deg) skew(-8deg,-8deg);
-  }
-  .chip {
-    position: absolute; z-index: 4;
-    background: rgba(12,14,24,.86); color: #fafbff;
-    border: 1px solid rgba(255,255,255,.22); border-radius: 9px;
-    padding: 5px 11px 7px; font-variant-numeric: tabular-nums;
-    font-size: clamp(10px, 1.4vw, 14px); font-weight: 600;
-    opacity: 0; transform: translate(-50%, 4px); transition: opacity .2s ease, transform .2s ease;
-    pointer-events: none;
-  }
-  .chip.show { opacity: 1; transform: translate(-50%, 0); }
-  .chip .track { display: block; height: 3px; margin-top: 5px; border-radius: 2px; background: rgba(255,255,255,.22); }
-  .chip .track i { display: block; height: 100%; border-radius: 2px; background: #f5a623; }
+/* ---------- shared UI: dimensional, not flat ---------- */
+.kicker{font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--orange);margin:0 0 18px}
+.lede{font-size:clamp(17px,1.6vw,20px);color:var(--dim);max-width:46ch;margin:20px 0 0;font-weight:600}
+.card{
+  position:relative;border-radius:22px;padding:26px 26px 24px;
+  background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.03));
+  border:1px solid var(--edge);
+  box-shadow:0 24px 50px rgba(0,0,0,.45), 0 1px 0 rgba(255,255,255,.16) inset;
+  backdrop-filter:blur(14px);
+  transform-style:preserve-3d;transition:transform .18s ease, box-shadow .18s ease;
+}
+.card:hover{box-shadow:0 34px 70px rgba(0,0,0,.55), 0 1px 0 rgba(255,255,255,.22) inset}
+.card h3{font-size:21px;margin-bottom:9px}
+.card p{margin:0;color:var(--dim);font-size:15.5px;font-weight:600}
+.ic{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;margin-bottom:16px;
+  background:linear-gradient(160deg,var(--orange),#C2410C);
+  box-shadow:0 10px 22px rgba(249,115,22,.4), 0 1px 0 rgba(255,255,255,.4) inset}
+.ic svg{width:23px;height:23px}
+.btn{
+  display:inline-flex;align-items:center;gap:10px;min-height:54px;padding:15px 28px;
+  border:0;border-radius:16px;font-family:var(--display);font-weight:600;font-size:18px;
+  background:linear-gradient(170deg,#FDA14B,var(--orange));color:#2A1403;text-decoration:none;
+  box-shadow:0 16px 34px rgba(249,115,22,.42), 0 1px 0 rgba(255,255,255,.5) inset;
+  transition:transform .16s cubic-bezier(.2,1.4,.5,1), box-shadow .16s;
+}
+.btn:hover{transform:translateY(-3px);box-shadow:0 24px 46px rgba(249,115,22,.5), 0 1px 0 rgba(255,255,255,.5) inset}
+.btn--ghost{background:var(--glass);color:var(--text);border:1px solid var(--edge);
+  box-shadow:0 14px 30px rgba(0,0,0,.4), 0 1px 0 rgba(255,255,255,.16) inset}
+.btn--ghost:hover{box-shadow:0 22px 44px rgba(0,0,0,.5), 0 1px 0 rgba(255,255,255,.2) inset}
+.btn svg{width:21px;height:21px}
+.rise{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.3,1),transform .7s cubic-bezier(.2,.7,.3,1)}
+.rise.in{opacity:1;transform:none}
 
-  .controls { display: flex; flex-wrap: wrap; gap: 9px; margin: 18px 0 10px; }
-  .ctl {
-    font: inherit; font-size: .93rem; font-weight: 550;
-    background: var(--card); color: var(--ink);
-    border: 1px solid var(--line); border-radius: 9px;
-    padding: 9px 15px; cursor: pointer;
-    transition: border-color .12s ease, transform .12s ease;
-  }
-  .ctl:hover { border-color: var(--accent); transform: translateY(-1px); }
-  .ctl[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-  .pills { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; margin-bottom: 14px; }
-  .pills .lbl { color: var(--muted); font-size: .88rem; margin-right: 2px; }
-  .typebox {
-    width: 100%; font: inherit; padding: 11px 14px;
-    border: 1px dashed var(--line); border-radius: 9px;
-    background: transparent; color: var(--ink);
-  }
-  .typebox:focus { outline: none; border-color: var(--accent); border-style: solid; }
-  .hint { color: var(--muted); font-size: .88rem; margin: 10px 0 0; }
+/* ---------- 1. hero ---------- */
+.hero .wrap{width:100%}
+.pill{display:inline-flex;align-items:center;gap:9px;padding:9px 18px;border-radius:999px;
+  background:var(--glass);border:1px solid var(--edge);font-weight:800;font-size:12.5px;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--dim);
+  box-shadow:0 10px 24px rgba(0,0,0,.35), 0 1px 0 rgba(255,255,255,.14) inset}
+.pill b{color:var(--amber)}
+h1{font-size:clamp(58px,9.2vw,138px);margin:24px 0 0;
+  text-shadow:0 24px 60px rgba(0,0,0,.6)}
+h1 .o{display:block;background:linear-gradient(170deg,#FFD089,var(--orange) 55%,#D14E09);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .lede{font-size:clamp(19px,2vw,25px);color:#C9D2F0;max-width:23ch;margin-top:26px}
+.hero .lede em{font-style:normal;color:var(--amber)}
+.cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:36px}
+.meta{font-weight:700;font-size:13px;letter-spacing:.07em;text-transform:uppercase;color:#7C88AB;margin:18px 0 0}
+.hero-right{position:absolute;right:28px;bottom:48px;max-width:230px;text-align:right;
+  font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#8E9ABE}
+@media (max-width:1000px){.hero-right{display:none}}
+.cue{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);color:#6E7AA0;
+  font-weight:800;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase}
+.cue span{display:block;width:1px;height:26px;margin:9px auto 0;
+  background:linear-gradient(var(--orange),transparent)}
 
-  /* ---------- feature sections ---------- */
-  section { padding: 54px 0; border-top: 1px solid var(--line); }
-  section:first-of-type { border-top: 0; }
-  h2 { font-size: 1.9rem; margin: 0 0 12px; }
-  .lede { font-size: 1.08rem; color: var(--muted); margin: 0 auto 22px; }
-  p { margin: 0 0 15px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; margin-top: 26px; }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; }
-  .card h3 { font-size: 1.02rem; margin: 0 0 7px; }
-  .card p { font-size: .94rem; color: var(--muted); margin: 0; }
+/* ---------- marquee ---------- */
+.mq{position:relative;z-index:2;overflow:hidden;padding:13px 0;
+  background:linear-gradient(90deg,rgba(249,115,22,.16),rgba(255,196,61,.14));
+  border-top:1px solid var(--edge);border-bottom:1px solid var(--edge)}
+.mq div{display:flex;gap:30px;white-space:nowrap;font-family:var(--display);font-weight:600;
+  font-size:19px;color:#FFD9A8;animation:slide 30s linear infinite}
+.mq span{display:inline-flex;gap:30px;align-items:center}
+.mq svg{width:12px;height:12px;opacity:.7}
+@keyframes slide{to{transform:translateX(-50%)}}
 
-  /* the working-clock demo */
-  .clocks { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0 14px; }
-  .clock { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 17px 19px; }
-  .clock h3 { font-size: .92rem; margin: 0 0 3px; }
-  .clock .who { color: var(--muted); font-size: .8rem; margin: 0 0 11px; }
-  .clock .bar { height: 9px; border-radius: 5px; background: var(--line); overflow: hidden; }
-  .clock .bar i { display: block; height: 100%; width: 0%; background: var(--accent); border-radius: 5px; }
-  .clock.ours .bar i { background: #3f9e5a; }
-  .clock .state { font-size: .82rem; color: var(--muted); margin: 9px 0 0; font-variant-numeric: tabular-nums; }
-  .fired { color: var(--accent); font-weight: 600; }
+/* ---------- 2. what it does ---------- */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:46px}
+@media (max-width:980px){.grid{grid-template-columns:1fr}}
+.race{display:grid;gap:12px;margin:18px 0 0}
+.lane{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:center}
+.lane b{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+.bar{height:12px;border-radius:7px;background:rgba(255,255,255,.1);overflow:hidden;
+  box-shadow:0 1px 0 rgba(255,255,255,.12) inset}
+.bar i{display:block;height:100%;width:0;border-radius:7px;background:#34D399;transition:width .18s linear}
+.lane.them .bar i{background:#FB7185}
+.state{font-size:13px;font-weight:700;color:var(--dim);margin:12px 0 0;min-height:1.4em;font-variant-numeric:tabular-nums}
+.state b{color:var(--amber)}
+.mini{margin-top:18px;font-size:14px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--orange);background:none;border:0;padding:0}
+.mini:hover{color:var(--amber)}
+.typebox{width:100%;font:inherit;font-weight:700;font-size:16px;padding:14px 16px;margin-top:16px;
+  border-radius:14px;border:1px solid var(--edge);background:rgba(0,0,0,.25);color:var(--text)}
+.typebox::placeholder{color:#6E7AA0}
+.typebox:focus{outline:none;border-color:var(--orange)}
 
-  ol { padding-left: 20px; } li { margin-bottom: 8px; }
-  kbd { font: inherit; font-size: .92em; font-weight: 600; background: var(--card);
-        border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; }
-  .note { background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--accent);
-          border-radius: 9px; padding: 18px 22px; }
-  .note p:last-child { margin-bottom: 0; }
-  .cta-end { text-align: center; }
-  footer { padding: 30px 0 70px; color: var(--muted); font-size: .88rem; text-align: center; }
+/* ---------- 3. cast + get ---------- */
+.cast{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}
+@media (max-width:980px){.cast{grid-template-columns:1fr 1fr}}
+@media (max-width:620px){.cast{grid-template-columns:1fr}}
+.who{text-align:left;font:inherit;color:inherit;width:100%}
+.who h3{font-size:19px;margin-bottom:6px}
+.who p{font-size:14.5px}
+.who .tag{display:inline-block;margin-top:12px;font-size:11px;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--amber)}
+.who[aria-pressed=true]{border-color:var(--orange);
+  box-shadow:0 26px 54px rgba(249,115,22,.3), 0 0 0 1px var(--orange) inset}
+.get{display:grid;grid-template-columns:1.1fr 1fr;gap:28px;align-items:center;margin-top:52px}
+@media (max-width:900px){.get{grid-template-columns:1fr}}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.steps li{display:flex;gap:14px;align-items:flex-start;font-weight:700;font-size:15.5px;color:var(--dim)}
+.steps li strong{color:var(--text)}
+.steps li b{flex:0 0 auto;width:30px;height:30px;border-radius:10px;display:grid;place-items:center;
+  background:var(--glass);border:1px solid var(--edge);color:var(--amber);font-family:var(--display);font-size:15px}
+footer{position:relative;z-index:2;padding:34px 0 48px;text-align:center;color:#6E7AA0;font-size:14px;font-weight:700}
+footer a{color:var(--orange)}
 
-  @media (max-width: 620px) {
-    h1 { font-size: 2.3rem; }
-    .clocks { grid-template-columns: 1fr; }
-  }
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .mq div{animation:none}
+  .rise{opacity:1;transform:none}
+}
 </style>
 </head>
 <body>
 
-<header class="hero wrap">
-  <svg class="hero-hang" viewBox="0 0 210 250" aria-hidden="true">
-    <g class="swing">
-      <line class="cord" x1="105" y1="0" x2="105" y2="142"/>
-      <g class="mark" transform="translate(42 127) scale(1.26)">
-        <path class="neck"  d="M50 12 L50 36"/>
-        <path class="hook"  d="M49.5 12 A5.5 5.5 0 0 1 59.45 8.77"/>
-        <path class="bar"   d="M10 74 Q22 44 50 36 Q78 44 90 74"/>
-        <path class="bar"   d="M10 74 L90 74"/>
-        <circle class="eye" cx="38.5" cy="53" r="4.2"/>
-        <circle class="eye" cx="61.5" cy="53" r="4.2"/>
-        <path class="smile" d="M40 61.5 Q50 69 60 61.5"/>
-      </g>
-    </g>
-  </svg>
-  <h1>Hangabout</h1>
-  <p class="tag">A companion that lives at the top of your Mac screen — and makes sure you actually see the things you asked to be reminded about.</p>
-  <a class="btn" href="https://github.com/bhagyeshrangole/hangabout-releases/releases/latest/download/Hangabout.zip">⬇&nbsp; Download for Mac</a>
-  <p class="req">Free · Apple Silicon · macOS 14 Sonoma or later</p>
+<div id="prog"><i></i></div>
+
+<canvas id="scene" aria-hidden="true"></canvas>
+<svg id="rig" aria-hidden="true" focusable="false">
+  <defs><linearGradient id="abd" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#FF5A4A"/><stop offset="1" stop-color="#8A1118"/></linearGradient></defs>
+  <g id="pivot">
+    <line class="cord" id="cord" x1="0" y1="0" x2="0" y2="90"/>
+    <g id="holder"><image id="cSpider" href="spider.png" x="-72" y="0" width="144" height="229" preserveAspectRatio="xMidYMin meet"/></g>
+  </g>
+  <circle id="grab" r="58"/>
+</svg>
+<div id="balloon" role="status"><span id="bText">Time to drink some water</span><span class="sub">Click to snooze 5 min</span></div>
+<div id="chip" aria-hidden="true">25:00<span class="track"><i id="chipFill"></i></span></div>
+
+<!-- ======== 1 ======== -->
+<header class="screen hero" data-sec="0">
+  <div class="wrap">
+    <span class="pill rise">Free <b>•</b> macOS <b>•</b> Apple&nbsp;Silicon</span>
+    <h1 class="rise">Hang<span class="o">about</span></h1>
+    <p class="lede rise">A companion on a thread at the top of your screen. It waits until you are <em>actually there</em>, then refuses to be missed.</p>
+    <div class="cta rise">
+      <a class="btn" href="https://github.com/bhagyeshrangole/hangabout-releases/releases/latest/download/Hangabout.zip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 21h16"/></svg>
+        Download for Mac</a>
+      <button class="btn btn--ghost" id="bRemind">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+        Poke it</button>
+    </div>
+    <p class="meta rise">macOS 14 Sonoma or later · 8 MB · no account, no Dock icon</p>
+  </div>
+  <p class="hero-right">Drag it anywhere — it stays. Double-click to shoot a web.</p>
+  <p class="cue">Scroll<span></span></p>
 </header>
 
-<div class="wrap demo">
-  <h2>Here it is. Go on, poke it.</h2>
-  <p class="lede">This is a working model of the app, running right here in the page — same pendulum, same balloon, same behaviour.</p>
+<div class="mq" aria-hidden="true"><div><span id="mq"></span><span id="mq2"></span></div></div>
 
-  <div class="screen" id="screen">
-    <div class="menubar">
-      <span>Hangabout</span>
-      <span class="right">
-        <svg viewBox="0 0 100 86" aria-hidden="true"><g class="mark"><path class="neck"  d="M50 12 L50 36"/>
-        <path class="hook"  d="M49.5 12 A5.5 5.5 0 0 1 59.45 8.77"/>
-        <path class="bar"   d="M10 74 Q22 44 50 36 Q78 44 90 74"/>
-        <path class="bar"   d="M10 74 L90 74"/>
-        <circle class="eye" cx="38.5" cy="53" r="4.2"/>
-        <circle class="eye" cx="61.5" cy="53" r="4.2"/>
-        <path class="smile" d="M40 61.5 Q50 69 60 61.5"/></g></svg>
-        <span id="clock">—</span>
-      </span>
-    </div>
+<!-- ======== 2 ======== -->
+<section class="screen" data-sec="1">
+  <div class="wrap">
+    <p class="kicker rise">What it actually does</p>
+    <h2 class="rise" style="font-size:clamp(34px,5.2vw,68px)">Fun to keep around.<br>Hard to ignore.</h2>
+    <p class="lede rise">Everything below is live — the companion on this page is the real thing.</p>
 
-    <svg id="stage" viewBox="0 0 900 340" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-      <defs>
-        <linearGradient id="abd" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#d63031"/><stop offset="1" stop-color="#7a1218"/>
-        </linearGradient>
-      </defs>
-
-      <!-- a hanging companion: cord + character, rotated about the pin -->
-      <g id="hangGroup">
-        <line class="cord" id="cord" x1="0" y1="0" x2="0" y2="120"/>
-        <g id="charHolder">
-          <g id="charSpider" transform="scale(1.02) translate(-100 0)">
-            <path d="M91.0 23.0 Q88.48 0.0 66.4 -3.0 Q54.88 -1.0 52.0 57.0" fill="none" stroke="#14141a" stroke-width="4.6" stroke-linecap="round"/>
-        <path d="M91.0 29.0 Q86.08 6.0 59.4 6.0 Q45.48 8.0 42.0 65.0" fill="none" stroke="#14141a" stroke-width="4.25" stroke-linecap="round"/>
-        <path d="M91.0 35.0 Q83.68 12.0 52.4 15.0 Q36.08 17.0 32.0 73.0" fill="none" stroke="#14141a" stroke-width="3.9" stroke-linecap="round"/>
-        <path d="M91.0 41.0 Q81.28 18.0 45.4 24.0 Q26.68 26.0 22.0 81.0" fill="none" stroke="#14141a" stroke-width="3.55" stroke-linecap="round"/>
-        <path d="M109.0 23.0 Q111.52 0.0 133.6 -3.0 Q145.12 -1.0 148.0 57.0" fill="none" stroke="#14141a" stroke-width="4.6" stroke-linecap="round"/>
-        <path d="M109.0 29.0 Q113.92 6.0 140.6 6.0 Q154.52 8.0 158.0 65.0" fill="none" stroke="#14141a" stroke-width="4.25" stroke-linecap="round"/>
-        <path d="M109.0 35.0 Q116.32 12.0 147.6 15.0 Q163.92 17.0 168.0 73.0" fill="none" stroke="#14141a" stroke-width="3.9" stroke-linecap="round"/>
-        <path d="M109.0 41.0 Q118.72 18.0 154.6 24.0 Q173.32 26.0 178.0 81.0" fill="none" stroke="#14141a" stroke-width="3.55" stroke-linecap="round"/>
-        <path d="M91.0 23.0 Q88.48 0.0 66.4 -3.0 Q54.88 -1.0 52.0 57.0" fill="none" stroke="#68687a" stroke-opacity=".45" stroke-width="0.9" stroke-linecap="round"/>
-        <path d="M91.0 29.0 Q86.08 6.0 59.4 6.0 Q45.48 8.0 42.0 65.0" fill="none" stroke="#68687a" stroke-opacity=".45" stroke-width="0.82" stroke-linecap="round"/>
-        <path d="M91.0 35.0 Q83.68 12.0 52.4 15.0 Q36.08 17.0 32.0 73.0" fill="none" stroke="#68687a" stroke-opacity=".45" stroke-width="0.74" stroke-linecap="round"/>
-        <path d="M91.0 41.0 Q81.28 18.0 45.4 24.0 Q26.68 26.0 22.0 81.0" fill="none" stroke="#68687a" stroke-opacity=".45" stroke-width="0.66" stroke-linecap="round"/>
-        <path d="M109.0 23.0 Q111.52 0.0 133.6 -3.0 Q145.12 -1.0 148.0 57.0" fill="none" stroke="#68687a" stroke-opacity=".45" stroke-width="0.9" stroke-linecap="round"/>
-        <path d="M109.0 29.0 Q113.92 6.0 140.6 6.0 Q154.52 8.0 158.0 65.0" fill="none" stroke="#68687a" stroke-opacity=".45" stroke-width="0.82" stroke-linecap="round"/>
-        <path d="M109.0 35.0 Q116.32 12.0 147.6 15.0 Q163.92 17.0 168.0 73.0" fill="none" stroke="#68687a" stroke-opacity=".45" stroke-width="0.74" stroke-linecap="round"/>
-        <path d="M109.0 41.0 Q118.72 18.0 154.6 24.0 Q173.32 26.0 178.0 81.0" fill="none" stroke="#68687a" stroke-opacity=".45" stroke-width="0.66" stroke-linecap="round"/>
-        <ellipse cx="100.0" cy="66.0" rx="27" ry="31" fill="url(#abd)" stroke="#1e0a0c" stroke-width="2"/>
-        <path d="M100.0 42.0 Q111.0 54.0 109.0 66.0 Q108.0 80.0 100.0 92.0 Q92.0 80.0 91.0 66.0 Q89.0 54.0 100.0 42.0Z" fill="#121216"/>
-        <ellipse cx="88.0" cy="50.0" rx="6" ry="9" fill="#fff" opacity=".28"/>
-        <ellipse cx="100.0" cy="30.0" rx="17" ry="14" fill="#202028"/>
-        <ellipse cx="89.0" cy="29.0" rx="3.2" ry="3.8" fill="#f0f0f5"/>
-        <ellipse cx="111.0" cy="29.0" rx="3.2" ry="3.8" fill="#f0f0f5"/>
-        <ellipse cx="95.5" cy="29.0" rx="2.2" ry="2.6" fill="#ebebf2"/>
-        <ellipse cx="104.5" cy="29.0" rx="2.2" ry="2.6" fill="#ebebf2"/>
-        <line x1="100.0" y1="0" x2="100.0" y2="22.0" stroke="#fff" stroke-opacity=".6" stroke-width="1.4"/>
-          </g>
-          <g id="charHanger" class="mark" transform="translate(-75 -18) scale(1.5)" style="display:none">
-            <path class="neck"  d="M50 12 L50 36"/>
-        <path class="hook"  d="M49.5 12 A5.5 5.5 0 0 1 59.45 8.77"/>
-        <path class="bar"   d="M10 74 Q22 44 50 36 Q78 44 90 74"/>
-        <path class="bar"   d="M10 74 L90 74"/>
-        <circle class="eye" cx="38.5" cy="53" r="4.2"/>
-        <circle class="eye" cx="61.5" cy="53" r="4.2"/>
-        <path class="smile" d="M40 61.5 Q50 69 60 61.5"/>
-          </g>
-        </g>
-      </g>
-
-      <!-- a floor companion: the cat, asleep in the corner until it has news -->
-      <g id="catGroup" style="display:none">
-        <g id="cat" transform="translate(140 286) scale(1.12)">
-          <ellipse cx="0" cy="0" rx="46" ry="27" fill="#8a6a4f"/>
-          <path d="M44 -4 Q74 -12 66 -36 Q62 -46 54 -42" fill="none" stroke="#8a6a4f" stroke-width="11" stroke-linecap="round" id="catTail"/>
-          <circle cx="-34" cy="-20" r="22" fill="#9a7858"/>
-          <path d="M-50 -34 L-54 -54 L-38 -44 Z" fill="#9a7858"/>
-          <path d="M-18 -36 L-12 -55 L-28 -47 Z" fill="#9a7858"/>
-          <g id="catEyesShut">
-            <path d="M-44 -20 q6 5 12 0" fill="none" stroke="#2b2119" stroke-width="2.6" stroke-linecap="round"/>
-            <path d="M-28 -20 q6 5 12 0" fill="none" stroke="#2b2119" stroke-width="2.6" stroke-linecap="round"/>
-          </g>
-          <g id="catEyesOpen" style="display:none">
-            <circle cx="-38" cy="-21" r="3.4" fill="#2b2119"/>
-            <circle cx="-22" cy="-21" r="3.4" fill="#2b2119"/>
-          </g>
-          <circle cx="-30" cy="-13" r="2.3" fill="#d68aa0"/>
-          <text id="catZ" x="-6" y="-48" font-size="19" fill="rgba(255,255,255,.55)" font-family="serif">z</text>
-        </g>
-      </g>
-    </svg>
-
-    <div class="balloon" id="balloon">
-      <span id="balloonText">Time to drink some water</span>
-      <span class="snooze">click me to snooze 5 min</span>
-    </div>
-    <div class="chip" id="chip">25:00<span class="track"><i id="chipFill"></i></span></div>
-  </div>
-
-  <div class="controls">
-    <button class="ctl" id="bRemind">Send a reminder</button>
-    <button class="ctl" id="bFlick">Give it a flick</button>
-    <button class="ctl" id="bFocus">Start a focus session</button>
-    <button class="ctl" id="bTuck" aria-pressed="false">Tuck away</button>
-  </div>
-
-  <div class="pills">
-    <span class="lbl">Companion:</span>
-    <button class="ctl" data-char="spider" aria-pressed="true">Spider</button>
-    <button class="ctl" data-char="hanger" aria-pressed="false">The hanger</button>
-    <button class="ctl" data-char="cat" aria-pressed="false">Cat</button>
-  </div>
-
-  <input class="typebox" id="typebox" placeholder="Type in here — watch it get out of your way, then come back when you stop.">
-  <p class="hint">Move your cursor past it and it swings away from you. Drag it down and let go — the thread is elastic and it climbs back up.</p>
-</div>
-
-<main class="wrap">
-
-<section>
-  <h2 class="narrow">Reminders that wait until you are actually there</h2>
-  <p class="lede narrow">A repeating reminder counts <em>working</em> seconds, not wall-clock ones. Step away and the clock pauses instead of resetting — so a 30-minute water reminder can never go off while you are at lunch.</p>
-  <div class="narrow">
-    <div class="clocks">
-      <div class="clock ours">
-        <h3>Hangabout</h3>
-        <p class="who">counts time at the keyboard</p>
-        <div class="bar"><i id="barOurs"></i></div>
-        <p class="state" id="stateOurs">0s banked</p>
+    <div class="grid">
+      <div class="card rise" data-tilt>
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#2A1403" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+        <h3>It waits for you</h3>
+        <p>Repeating reminders bank <em>working</em> seconds. Step away and the clock pauses instead of resetting.</p>
+        <div class="race">
+          <div class="lane"><b>Hangabout</b><div class="bar"><i id="barOurs"></i></div></div>
+          <div class="lane them"><b>Ordinary</b><div class="bar"><i id="barThem"></i></div></div>
+        </div>
+        <p class="state" id="raceState">Press below and walk away.</p>
+        <button class="mini" id="bAway">Step away from the desk →</button>
       </div>
-      <div class="clock">
-        <h3>An ordinary timer</h3>
-        <p class="who">counts the wall clock</p>
-        <div class="bar"><i id="barThem"></i></div>
-        <p class="state" id="stateThem">0s elapsed</p>
+
+      <div class="card rise" data-tilt>
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#2A1403" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+        <h3>Then it holds on</h3>
+        <p>It comes down the screen, swings to catch your eye, and keeps the message up until you deal with it. Click it to dismiss, click the balloon to snooze.</p>
+        <button class="mini" id="bRemind2">Send a reminder now →</button>
+      </div>
+
+      <div class="card rise" data-tilt>
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#2A1403" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 1-9 9"/><path d="M12 3v9l6 3"/></svg></span>
+        <h3>And gets out of the way</h3>
+        <p>A focus session pins a countdown above it and never moves it. Type anywhere and it vanishes, then comes back when you stop.</p>
+        <input class="typebox" id="typebox" placeholder="Type here — watch it hide…">
+        <button class="mini" id="bFocus">Start a 25-minute session →</button>
       </div>
     </div>
-    <button class="ctl" id="bAway" aria-pressed="false">Step away from the desk</button>
-    <p class="hint">Press it and watch the two clocks disagree. That disagreement is the whole feature — it is why this reminder is still installed in a month.</p>
-    <p style="margin-top:22px">Banked time survives a restart, too. It is written to disk every minute, so quitting the app does not silently wipe your progress toward a break.</p>
-    <p>One-off alarms work the other way round, on the wall clock: <strong>Remind me in… → 2 hours</strong>, type what it should say, done. It fires whether you are at the desk or not, chimes, and deletes itself.</p>
   </div>
 </section>
 
-<section>
-  <h2 class="narrow">A notification you cannot miss, and cannot lose</h2>
-  <p class="lede narrow">Banner notifications slide away while you are mid-sentence and end up in a tray you never open. Hangabout comes down the screen, swings to catch your eye, and then simply stays there holding the message until you deal with it.</p>
-  <div class="grid">
-    <div class="card"><h3>Click it to dismiss</h3><p>One click on the companion and the reminder is done.</p></div>
-    <div class="card"><h3>Click the balloon to snooze</h3><p>Five more minutes. The balloon says so in small type, because a snooze you have to discover is a snooze nobody uses.</p></div>
-    <div class="card"><h3>One at a time</h3><p>Anything else that comes due keeps its place in the queue and arrives once you have dealt with the first.</p></div>
-  </div>
-</section>
+<!-- ======== 3 ======== -->
+<section class="screen" data-sec="2">
+  <div class="wrap">
+    <p class="kicker rise">The cast</p>
+    <h2 class="rise" style="font-size:clamp(34px,5.2vw,68px)">Six of them.<br>Pick your favourite.</h2>
+    <p class="lede rise">Some hang from a thread at the top of the screen. Others stand on the floor and walk over when they have something to say.</p>
 
-<section>
-  <h2 class="narrow">Focus sessions that do not become the distraction</h2>
-  <p class="lede narrow">Pick <strong>Focus → 25 minutes</strong> and a small countdown chip pins itself above the companion. Click the character to pause, click again to resume.</p>
-  <div class="narrow">
-    <p>The session deliberately <em>does not move the character at all</em>. An earlier version sank it down the screen as the time ran out, which was a nice idea and exactly wrong: it moved the one thing you were trying to ignore, on purpose, for half an hour.</p>
-    <p>Repeating reminders go quiet during a session. One-off alarms do not — an alarm is tied to a moment that passes, and swallowing one silently would be worse than the interruption. Working time still banks while they are muted, so a focus session never erases your progress toward a break.</p>
-  </div>
-</section>
-
-<section>
-  <h2 class="narrow">It knows when to disappear</h2>
-  <p class="lede narrow">The companion spends nearly all its time tucked under the top edge of the screen, and — more importantly — it <strong>stops moving</strong>.</p>
-  <div class="narrow">
-    <p>Something that sways all day teaches you to ignore it, and then it cannot tell you anything. Stillness is what gives the movement meaning, so there is no idle fidgeting while it is tucked away.</p>
-    <p><strong>Hide while typing</strong> pulls it completely out of sight whenever a key has been pressed in the last two and a half seconds. And the window it lives in passes every click straight through to whatever is underneath — it only becomes grabbable in the moment your cursor is actually on it, so a full-width invisible panel sits over your screen without ever eating a click.</p>
-  </div>
-</section>
-
-<section>
-  <h2 class="narrow">Pick who keeps you company</h2>
-  <p class="lede narrow">Six companions ship with the app, on two kinds of motion: some hang from a thread at the top of the screen, others stand on the floor and walk over when they have something to say.</p>
-  <div class="grid">
-    <div class="card"><h3>Spider</h3><p>Hangs from a thread. Drag it down and the silk stretches, then it hauls itself back up in pulls.</p></div>
-    <div class="card"><h3>Cat and Dog</h3><p>Asleep in a corner until there is news, then they get up and walk over. Both drawn in code.</p></div>
-    <div class="card"><h3>Iron Man and Tony Stark</h3><p>One stands on the floor and lights the thrusters only when he is going somewhere. The other idles out of the armour and suits up when there is something to do.</p></div>
-    <div class="card"><h3>Captain America</h3><p>Stands at ease, and throws the shield. It glances off two screen edges, buries itself in a third with a quiver, and comes home when the balloon does.</p></div>
-  </div>
-  <p class="hint" style="margin-top:18px">The menu only ever offers what makes sense: “give it a flick” means nothing to a man who flies, so it is not offered to him.</p>
-  <p class="narrow" style="margin-top:22px">You can add your own, too. Drop a folder of images and a small <code>character.json</code> into the app’s Characters folder and it appears in the menu alongside the rest — no code, no rebuild.</p>
-</section>
-
-<section>
-  <h2 class="narrow">Getting it running</h2>
-  <div class="narrow">
-    <ol>
-      <li>Download the zip and double-click it.</li>
-      <li>Drag <strong>Hangabout.app</strong> into your <strong>Applications</strong> folder.</li>
-      <li>Double-click it. macOS will refuse the first time — see below.</li>
-    </ol>
-    <div class="note">
-      <p><strong>macOS will say it “cannot verify Hangabout is free of malware”.</strong></p>
-      <p>That is not a warning about this app. macOS says it about anything that has not been through Apple’s $99/year notarization, and Hangabout is a hobby project.</p>
-      <p>Click <kbd>Done</kbd>, then open <strong>System Settings → Privacy &amp; Security</strong>, scroll to the bottom and click <kbd>Open Anyway</kbd>. Authenticate, confirm once more, and that is it — only ever the first time.</p>
+    <div class="cast">
+      <button class="card who rise" data-tilt data-char="spider" aria-pressed="true">
+        <h3>Spider</h3><p>Hangs upside down on a line, shoots webs, and the silk stretches when you drag it before hauling itself back up.</p>
+        <span class="tag">Hanging here now · double-click it</span>
+      </button>
+      <div class="card who rise" data-tilt><h3>The hanger</h3><p>The app's own mark, drawn rather than borrowed, with a face it only shows up close. It is the menu bar icon too.</p></div>
+      <div class="card who rise" data-tilt><h3>Cat</h3><p>Asleep in a corner until there is news, then gets up and walks over. Drawn in code.</p></div>
+      <div class="card who rise" data-tilt><h3>Dog</h3><p>The same, with floppy ears and a tail that gives the game away.</p></div>
+      <div class="card who rise" data-tilt><h3>Iron Man &amp; Tony</h3><p>One lights the thrusters only when he is going somewhere. The other suits up when there is something to do.</p></div>
+      <div class="card who rise" data-tilt><h3>Captain America</h3><p>Stands at ease and throws the shield. It glances off two screen edges and comes home when the balloon does.</p></div>
     </div>
-    <p style="margin-top:18px">A companion appears at the top of your screen and a hanger icon appears in your menu bar. Everything lives in that menu. There is no Dock icon, by design. To remove it: quit from the menu bar and drag the app to the Trash — it leaves nothing behind.</p>
+
+    <div class="get">
+      <div class="rise">
+        <h3 style="font-size:clamp(24px,3vw,38px);margin-bottom:16px">Three steps and one odd warning.</h3>
+        <ol class="steps">
+          <li><b>1</b><span>Download the zip and unzip it.</span></li>
+          <li><b>2</b><span>Drag Hangabout.app into Applications.</span></li>
+          <li><b>3</b><span>First launch, macOS will refuse — open <strong>System Settings → Privacy &amp; Security</strong> and hit <strong>Open Anyway</strong>. Once only.</span></li>
+        </ol>
+      </div>
+      <div class="card rise" style="text-align:center">
+        <p style="color:var(--text);font-family:var(--display);font-size:20px;margin-bottom:18px">Free, and it leaves nothing behind.</p>
+        <a class="btn" href="https://github.com/bhagyeshrangole/hangabout-releases/releases/latest/download/Hangabout.zip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 21h16"/></svg>
+          Download for Mac</a>
+        <p class="meta" style="text-align:center">Apple Silicon · macOS 14+</p>
+      </div>
+    </div>
   </div>
-  <p class="cta-end" style="margin-top:34px">
-    <a class="btn" href="https://github.com/bhagyeshrangole/hangabout-releases/releases/latest/download/Hangabout.zip">⬇&nbsp; Download for Mac</a>
-  </p>
-  <p class="req cta-end">Free · Apple Silicon · macOS 14 Sonoma or later</p>
 </section>
 
-</main>
-
-<footer>
-  Made by <a href="https://github.com/bhagyeshrangole">Bhagyesh Rangole</a> ·
-  <a href="https://github.com/bhagyeshrangole/hangabout-releases/releases">All versions</a>
-</footer>
+<footer>Made by <a href="https://github.com/bhagyeshrangole">Bhagyesh Rangole</a> · <a href="https://github.com/bhagyeshrangole/hangabout-releases/releases">All versions</a></footer>
 
 <script>
 (() => {
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const $ = id => document.getElementById(id);
-  const screenEl = $('screen'), stage = $('stage');
-  const hangGroup = $('hangGroup'), cord = $('cord'), holder = $('charHolder');
-  const catGroup = $('catGroup'), cat = $('cat');
-  const balloon = $('balloon'), chip = $('chip'), chipFill = $('chipFill');
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = s => document.querySelector(s);
+const rig=$('#rig'), pivot=$('#pivot'), cord=$('#cord'), holder=$('#holder'), grab=$('#grab');
+const balloon=$('#balloon'), chip=$('#chip'), chipFill=$('#chipFill');
 
-  const VW = 900, VH = 340;          // the stage's own coordinate space
-  const PIN_X = 610, PIN_Y = 30;     // where the thread is pinned
-  const TUCKED = 66, DOWN = 196;     // cord lengths, in stage units
+const STAR='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.6 6.8L21.5 11l-6.9 2.2L12 20l-2.6-6.8L2.5 11l6.9-2.2z"/></svg>';
+const WORDS=['DRINK SOME WATER','STAND UP','LOOK AWAY FOR 20 SECONDS','BREAK TIME','STRETCH','BLINK'];
+const strip=WORDS.concat(WORDS).map(w=>`<span>${w}</span>${STAR}`).join('');
+$('#mq').innerHTML=strip; $('#mq2').innerHTML=strip;
 
-  // Same model as Pendulum.swift: an angle, a velocity, and a cord length that
-  // sets the period. A long pendulum swings slower and wider than a short one,
-  // which is why the flick is expressed as an angle, not a raw shove.
-  const S = {
-    angle: 0, vel: 0, cord: TUCKED, cordTarget: TUCKED,
-    kind: 'spider', tucked: false, typing: 0, paused: false
+const TUCK=92, DOWN=340;
+const S={angle:0,vel:0,cord:TUCK,target:TUCK,pinX:0,pinTarget:0,kind:'spider',
+         W:0,H:0,sec:0,placed:false,web:null};
+window.__hang=S;
+let W=0,H=0;
+function size(){
+  W=innerWidth;H=innerHeight;S.W=W;S.H=H;
+  rig.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  if(!S.pinX) S.pinX=W*0.78;
+}
+size(); addEventListener('resize',size);
+
+const charm=()=>({x:S.pinX+Math.sin(S.angle)*S.cord, y:Math.cos(S.angle)*S.cord});
+const impulse=a=>S.vel+=a*Math.sqrt(1100/Math.max(80,S.cord))*(Math.random()<.5?-1:1);
+
+let last=performance.now();
+function frame(now){
+  const dt=Math.min(.05,(now-last)/1000); last=now;
+  // Which screen you are on decides where it hangs — until you move it
+  // yourself, and then it stays exactly where you left it.
+  if(!S.placed){
+    S.pinTarget = S.sec===0 ? W*0.78 : W*0.50;
+    S.pinX += (S.pinTarget-S.pinX)*(1-Math.pow(0.05,dt));
+  }
+  const L=Math.max(80,S.cord);
+  S.vel += -(3200/L)*Math.sin(S.angle)*dt;
+  S.vel *= Math.pow(0.5,dt/2.0);
+  S.angle += S.vel*dt;
+  S.cord += (S.target-S.cord)*(1-Math.pow(0.004,dt));
+  cord.setAttribute('y2',S.cord.toFixed(1));
+  holder.setAttribute('transform',`translate(0 ${S.cord.toFixed(1)})`);
+  pivot.setAttribute('transform',`translate(${S.pinX.toFixed(1)} 0) rotate(${(S.angle*180/Math.PI).toFixed(2)})`);
+  const c=charm();
+  grab.setAttribute('cx',c.x); grab.setAttribute('cy',c.y);
+  if(balloon.classList.contains('show')){balloon.style.left=c.x+'px';balloon.style.top=(c.y-124)+'px';}
+  if(chip.classList.contains('show')){chip.style.left=c.x+'px';chip.style.top=(c.y-(balloon.classList.contains('show')?196:92))+'px';}
+  requestAnimationFrame(frame);
+}
+
+let prev=null;
+addEventListener('mousemove',e=>{
+  if(prev){
+    const sp=Math.hypot(e.clientX-prev.x,e.clientY-prev.y);
+    const c=charm(), d=Math.hypot(e.clientX-c.x,e.clientY-c.y);
+    if(d<230 && sp>2) S.vel += (Math.sign(c.x-e.clientX)||1)*Math.min(sp,60)*(1-d/230)*0.0022;
+  }
+  prev={x:e.clientX,y:e.clientY};
+});
+
+let drag=false;
+grab.addEventListener('pointerdown',e=>{drag=true;grab.setPointerCapture(e.pointerId);e.preventDefault();});
+addEventListener('pointermove',e=>{
+  if(!drag) return;
+  // Both halves of the drag: where the line is pinned follows the cursor and
+  // sticks, how far down it hangs is elastic.
+  S.placed = true;
+  S.pinX = Math.max(70, Math.min(W-70, e.clientX));
+  const beyond=Math.max(0,e.clientY-DOWN);
+  S.target=Math.max(110,Math.min(e.clientY, DOWN+190*(1-Math.exp(-beyond/190))));
+  S.angle*=0.82; S.vel*=0.82;
+});
+const drop=()=>{if(drag){drag=false;S.target=balloon.classList.contains('show')?DOWN:TUCK;impulse(.1);}};
+addEventListener('pointerup',drop); addEventListener('pointercancel',drop);
+grab.addEventListener('dblclick',e=>{
+  S.target=Math.max(S.target,250); impulse(.42);
+  shootWeb(e.clientX < S.pinX ? 70 : W-70, Math.max(60, e.clientY-220));
+});
+// A web is just a target plus a clock; the 3D layer draws the strand.
+function shootWeb(tx,ty){ S.web = {tx, ty, t0: performance.now()}; }
+window.__shootWeb = shootWeb;
+
+const LINES=['Time to drink some water','Stand up and stretch','Look away for twenty seconds','Break time'];
+let n=0,hideT=null;
+function remind(){
+  clearTimeout(hideT);
+  $('#bText').textContent=LINES[n++%LINES.length];
+  S.target=DOWN; impulse(.34);
+  setTimeout(()=>balloon.classList.add('show'),380);
+  hideT=setTimeout(dismiss,9500);
+}
+function dismiss(){balloon.classList.remove('show');S.target=TUCK;}
+balloon.addEventListener('click',()=>{$('#bText').textContent='Snoozed — back in 5';clearTimeout(hideT);hideT=setTimeout(dismiss,1200);});
+grab.addEventListener('click',()=>{if(balloon.classList.contains('show'))dismiss();});
+$('#bRemind').onclick=remind; $('#bRemind2').onclick=remind;
+
+let fT=null;
+$('#bFocus').onclick=()=>{
+  clearInterval(fT); chip.classList.add('show');
+  let left=25*60; const total=left;
+  const tick=()=>{
+    left-=20;
+    if(left<=0){clearInterval(fT);chip.classList.remove('show');remind();return;}
+    chip.firstChild.textContent=`${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`;
+    chipFill.style.width=(100-left/total*100)+'%';
+  };
+  tick(); fT=setInterval(tick,110);
+};
+
+let tT=null;
+$('#typebox').addEventListener('input',()=>{
+  clearTimeout(tT);
+  if(!balloon.classList.contains('show')) S.target=-40;
+  tT=setTimeout(()=>{if(!balloon.classList.contains('show'))S.target=TUCK;},2500);
+});
+
+document.querySelectorAll('[data-char]').forEach(b=>b.onclick=()=>{
+  S.target=Math.max(S.target,230); impulse(.3);
+  shootWeb(S.pinX>innerWidth/2?90:innerWidth-90, 140);
+});
+
+/* cards tilt toward the cursor — depth you can feel, not just see */
+document.querySelectorAll('[data-tilt]').forEach(el=>{
+  el.addEventListener('pointermove',e=>{
+    const r=el.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width-.5, y=(e.clientY-r.top)/r.height-.5;
+    el.style.transform=`perspective(1000px) rotateY(${x*9}deg) rotateX(${-y*9}deg) translateZ(16px)`;
+  });
+  el.addEventListener('pointerleave',()=>{el.style.transform='';});
+});
+
+/* reveal + progress + which screen we are on */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{rootMargin:'-70px'});
+document.querySelectorAll('.rise').forEach((el,i)=>{el.style.transitionDelay=(i%3*80)+'ms';io.observe(el);});
+const bar=$('#prog i'), secs=[...document.querySelectorAll('[data-sec]')];
+const onScroll=()=>{
+  const max=document.documentElement.scrollHeight-innerHeight;
+  bar.style.width=(max>0?scrollY/max*100:0)+'%';
+  let cur=0;
+  secs.forEach(s=>{const r=s.getBoundingClientRect(); if(r.top<innerHeight*0.45) cur=+s.dataset.sec;});
+  S.sec=cur;
+};
+addEventListener('scroll',onScroll,{passive:true}); onScroll();
+
+let ours=0,them=0,away=false,started=false; const GOAL=30;
+$('#bAway').onclick=e=>{
+  away=!away;
+  e.currentTarget.textContent = away?'Come back to the desk →':'Step away from the desk →';
+  if(!started){started=true;setInterval(tick,200);}
+};
+function tick(){
+  if(!away) ours=Math.min(GOAL,ours+1);
+  them=Math.min(GOAL,them+1);
+  $('#barOurs').style.width=ours/GOAL*100+'%';
+  $('#barThem').style.width=them/GOAL*100+'%';
+  $('#raceState').innerHTML = ours>=GOAL?'<b>Yours fires — and you are here to see it.</b>'
+    : them>=GOAL?'<b>Theirs fired into an empty chair.</b>'
+    : (away?'Away. Yours is paused, theirs is not.':ours+'s banked · '+them+'s elapsed');
+}
+
+if(!reduced) requestAnimationFrame(frame);
+else{cord.setAttribute('y2',TUCK);holder.setAttribute('transform',`translate(0 ${TUCK})`);pivot.setAttribute('transform',`translate(${W*0.78} 0)`);}
+})();
+</script>
+
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js"}}
+</script>
+<script type="module">
+// The 3D layer owns no state. The script above stays the source of truth for
+// the pendulum; this converts its pixel values to world units so the balloon,
+// the chip and the grab target all still land on the companion.
+import * as THREE from 'three';
+const S = window.__hang;
+const canvas = document.getElementById('scene');
+const rig = document.getElementById('rig');
+
+let renderer;
+try { renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true, powerPreference:'high-performance'}); }
+catch (e) { /* no WebGL: the flat companion stays */ }
+
+if (renderer) {
+  THREE.ColorManagement.enabled = true;
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.08;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  const FOV = 38, DIST = 14;
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 80);
+  camera.position.set(0, 0, DIST);
+  const visibleH = () => 2 * DIST * Math.tan(THREE.MathUtils.degToRad(FOV) / 2);
+  let PPU = 100;
+
+  scene.add(new THREE.AmbientLight(0x8fa3ff, 0.62));
+  const key = new THREE.DirectionalLight(0xfff4e6, 2.7);
+  key.position.set(-2.6, 4.6, 7.5);
+  key.castShadow = true;                        // the only shadow caster
+  key.shadow.mapSize.set(1024, 1024);
+  key.shadow.camera.near = 1; key.shadow.camera.far = 32;
+  key.shadow.camera.left = -9; key.shadow.camera.right = 9;
+  key.shadow.camera.top = 9; key.shadow.camera.bottom = -9;
+  key.shadow.radius = 6; key.shadow.bias = -0.0015;
+  scene.add(key);
+  const warm = new THREE.PointLight(0xF97316, 55, 26, 2); warm.position.set(5,-1,-4); scene.add(warm);
+  const cool = new THREE.PointLight(0x5B8CFF, 35, 24, 2); cool.position.set(-6,2,-3); scene.add(cool);
+
+  const catcher = new THREE.Mesh(new THREE.PlaneGeometry(50, 36),
+    new THREE.ShadowMaterial({opacity:0.3, depthWrite:false}));
+  catcher.position.z = -1.0; catcher.receiveShadow = true; scene.add(catcher);
+
+  const tube = (pts, r, mat) =>
+    new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 20, r, 10, false), mat);
+  const V = (x,y,z=0) => new THREE.Vector3(x,y,z);
+
+  const pivot = new THREE.Group(); scene.add(pivot);
+  const hang  = new THREE.Group(); pivot.add(hang);
+  const silk = new THREE.MeshStandardMaterial({color:0xF3F6FF, roughness:.85, emissive:0x223055, emissiveIntensity:.25});
+  const line = new THREE.Mesh(new THREE.CylinderGeometry(.013, .013, 1, 6), silk);
+  pivot.add(line);
+
+  // --- the companion: the app's own artwork, hanging on the line ---
+  // It is a finished render, so it is drawn unlit — relighting it would only
+  // fight the lighting already baked into the picture.
+  let artReady = false;
+  const tex = new THREE.TextureLoader().load('spider.png',
+    t => {
+      t.colorSpace = THREE.SRGBColorSpace;
+      t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      artReady = true;
+      canvas.classList.add('on');
+      rig.classList.add('is3d');
+    },
+    undefined,
+    () => { canvas.classList.remove('on'); rig.classList.remove('is3d'); }
+  );
+  const ART_W = 450, ART_H = 715;
+  const hero = new THREE.Group(); hang.add(hero);
+  const sprite = new THREE.Mesh(
+    new THREE.PlaneGeometry(1, 1),
+    new THREE.MeshBasicMaterial({map:tex, transparent:true, alphaTest:0.08, side:THREE.DoubleSide})
+  );
+  sprite.castShadow = true;      // alphaTest gives the shadow its real outline
+  hero.add(sprite);
+
+  // --- a web strand it can shoot ---
+  const hand = new THREE.Object3D(); hero.add(hand);   // roughly its right glove
+  const strand = new THREE.Mesh(new THREE.CylinderGeometry(.03,.012,1,7), silk);
+  strand.visible = false; scene.add(strand);
+  const splat = new THREE.Mesh(new THREE.SphereGeometry(.13,16,12), silk);
+  splat.scale.set(1,1,.35); splat.visible = false; scene.add(splat);
+  const aim = (mesh, from, to) => {
+    const dir = new THREE.Vector3().subVectors(to, from);
+    const len = dir.length() || .0001;
+    mesh.position.copy(from).addScaledVector(dir, .5);
+    mesh.scale.set(1, len, 1);
+    mesh.quaternion.setFromUnitVectors(V(0,1,0), dir.clone().normalize());
   };
 
-  const charmXY = () => ({
-    x: PIN_X + Math.sin(S.angle) * S.cord,
-    y: PIN_Y + Math.cos(S.angle) * S.cord
+  function resize(){
+    const w = innerWidth, h = innerHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w/h; camera.updateProjectionMatrix();
+    PPU = h / visibleH();
+    // size the artwork in CSS pixels, then hang it from its own top edge
+    const ah = 230/PPU, aw = ah * (ART_W/ART_H);   // `w`/`h` are the viewport
+    sprite.scale.set(aw, ah, 1);
+    sprite.position.y = -ah/2;
+    hand.position.set(aw*0.40, -ah*0.34, 0);
+  }
+  addEventListener('resize', resize);
+
+  const toWorld = (px, py) => V((px - S.W/2)/PPU, visibleH()/2 - py/PPU, 0);
+  let mx = 0, my = 0, t = 0;
+  addEventListener('mousemove', e => {
+    mx = (e.clientX/innerWidth - .5) * 2;
+    my = -(e.clientY/innerHeight - .5) * 2;
   });
 
-  function impulse(angleWanted) {
-    // Scale the push to the cord length so the swing *looks* the same however
-    // far down it is hanging.
-    S.vel += angleWanted * Math.sqrt(900 / Math.max(60, S.cord)) * (Math.random() < .5 ? -1 : 1);
-  }
+  const handWorld = new THREE.Vector3();
+  function draw(now){
+    t = now/1000;
+    const cordW = Math.max(.02, S.cord/PPU);
 
-  let last = performance.now();
-  function frame(now) {
-    const dt = Math.min(.05, (now - last) / 1000); last = now;
-    const L = Math.max(60, S.cord);
-    S.vel += -(2600 / L) * Math.sin(S.angle) * dt;   // gravity
-    S.vel *= Math.pow(0.5, dt / 1.9);                 // air, as a half-life
-    S.angle += S.vel * dt;
-    S.cord += (S.cordTarget - S.cord) * (1 - Math.pow(0.004, dt));
+    pivot.position.set((S.pinX - S.W/2)/PPU, visibleH()/2, 0);
+    pivot.rotation.z = -S.angle;
+    hang.position.y = -cordW;
+    line.position.y = -cordW/2; line.scale.y = cordW;
 
-    cord.setAttribute('y2', S.cord.toFixed(1));
-    holder.setAttribute('transform', `translate(0 ${S.cord.toFixed(1)})`);
-    hangGroup.setAttribute('transform',
-      `translate(${PIN_X} ${PIN_Y}) rotate(${(S.angle * 180 / Math.PI).toFixed(2)})`);
+    // a flat picture cannot turn far before it shows its edge
+    hero.rotation.y = Math.sin(t*.45)*.13 + S.vel*.18;
+    hero.rotation.x = Math.cos(t*.33)*.04;
 
-    if (balloon.classList.contains('show') && S.kind !== 'cat') {
-      const p = charmXY();
-      place(balloon, p.x, p.y - 104);
-    }
-    if (chip.classList.contains('show') && S.kind !== 'cat') {
-      const p = charmXY();
-      // a balloon is taller than the chip, so the chip steps out of its way
-      place(chip, p.x, p.y - (balloon.classList.contains('show') ? 168 : 72));
-    }
-    requestAnimationFrame(frame);
-  }
-
-  // stage units -> CSS percentages, so it stays put at any screen width
-  function place(el, x, y) {
-    el.style.left = (x / VW * 100) + '%';
-    el.style.top  = (y / VH * 100) + '%';
-  }
-
-  /* ---- the cursor push ---- */
-  let lastPt = null;
-  screenEl.addEventListener('mousemove', e => {
-    if (S.kind === 'cat') return;
-    const r = screenEl.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width * VW;
-    const y = (e.clientY - r.top) / r.height * VH;
-    if (lastPt) {
-      const speed = Math.hypot(x - lastPt.x, y - lastPt.y);
-      const p = charmXY();
-      const d = Math.hypot(x - p.x, y - p.y);
-      // Only a *moving* cursor pushes. Hovering does nothing, so you can still
-      // stop and grab it.
-      if (d < 190 && speed > 1.5) {
-        const away = Math.sign(p.x - x) || 1;
-        S.vel += away * Math.min(speed, 40) * (1 - d / 190) * 0.0026;
+    // --- web shot: out fast, hold, snap back ---
+    if (S.web) {
+      const age = (now - S.web.t0) / 1000;
+      const OUT = .22, HOLD = .75, BACK = .3;
+      if (age > OUT + HOLD + BACK) { S.web = null; strand.visible = splat.visible = false; }
+      else {
+        hand.getWorldPosition(handWorld);
+        const target = toWorld(S.web.tx, S.web.ty);
+        let k = age < OUT ? age/OUT : (age < OUT+HOLD ? 1 : 1 - (age-OUT-HOLD)/BACK);
+        k = Math.max(0, Math.min(1, k));
+        const tip = handWorld.clone().lerp(target, k);
+        aim(strand, handWorld, tip);
+        strand.visible = k > .02;
+        splat.visible = k > .97;
+        splat.position.copy(target);
+        splat.scale.setScalar(1 + Math.sin(t*9)*.07);
       }
     }
-    lastPt = { x, y };
-  });
-  screenEl.addEventListener('mouseleave', () => lastPt = null);
 
-  /* ---- dragging: position is fixed, the drop is elastic ---- */
-  let dragging = false;
-  screenEl.addEventListener('pointerdown', e => {
-    if (S.kind === 'cat') return;
-    dragging = true; screenEl.setPointerCapture(e.pointerId);
-  });
-  screenEl.addEventListener('pointermove', e => {
-    if (!dragging) return;
-    const r = screenEl.getBoundingClientRect();
-    const y = (e.clientY - r.top) / r.height * VH;
-    const beyond = Math.max(0, y - PIN_Y - DOWN);
-    // Eases toward a limit rather than snapping out to arm's length.
-    S.cordTarget = DOWN + 110 * (1 - Math.exp(-beyond / 110));
-  });
-  const endDrag = () => { if (dragging) { dragging = false; settle(); } };
-  screenEl.addEventListener('pointerup', endDrag);
-  screenEl.addEventListener('pointercancel', endDrag);
-
-  /* ---- the things it does ---- */
-  const LINES = ['Time to drink some water', 'Stand up and stretch',
-                 'Look away for twenty seconds', 'Break time'];
-  let msg = 0, balloonTimer = null;
-
-  function remind() {
-    clearTimeout(balloonTimer);
-    $('balloonText').textContent = LINES[msg++ % LINES.length];
-    if (S.kind === 'cat') {
-      // A floor companion wakes up and walks over to say it.
-      $('catEyesShut').style.display = 'none';
-      $('catEyesOpen').style.display = '';
-      $('catZ').style.display = 'none';
-      cat.style.transition = 'transform 1.9s cubic-bezier(.4,0,.3,1)';
-      cat.setAttribute('transform', 'translate(430 286) scale(1.12)');
-      setTimeout(() => { balloon.classList.add('show'); place(balloon, 430, 178); }, 1500);
-    } else {
-      S.tucked = false; $('bTuck').setAttribute('aria-pressed', 'false');
-      S.cordTarget = DOWN;
-      impulse(0.30);                      // a reminder brings it down *and* sets it swinging
-      setTimeout(() => balloon.classList.add('show'), 420);
-    }
-    balloonTimer = setTimeout(settleAll, 9000);
+    camera.position.x = mx*.5; camera.position.y = my*.3;
+    camera.lookAt(0,0,0);
+    if (artReady) renderer.render(scene, camera);
+    requestAnimationFrame(draw);
   }
 
-  function settle() {
-    if (S.kind === 'cat') return;
-    S.cordTarget = balloon.classList.contains('show') ? DOWN : (S.tucked ? TUCKED : TUCKED);
-  }
-  function settleAll() {
-    balloon.classList.remove('show');
-    if (S.kind === 'cat') {
-      cat.setAttribute('transform', 'translate(140 286) scale(1.12)');
-      setTimeout(() => {
-        $('catEyesShut').style.display = ''; $('catEyesOpen').style.display = 'none';
-        $('catZ').style.display = '';
-      }, 1900);
-    } else {
-      S.cordTarget = TUCKED;
-    }
-  }
-
-  balloon.addEventListener('click', () => {           // the balloon is the snooze button
-    $('balloonText').textContent = 'Snoozed — see you in 5';
-    setTimeout(settleAll, 1100);
-  });
-  screenEl.addEventListener('click', () => {           // clicking the character dismisses
-    if (balloon.classList.contains('show')) settleAll();
-  });
-
-  $('bRemind').onclick = remind;
-  $('bFlick').onclick = () => { if (S.kind !== 'cat') { S.cordTarget = Math.max(S.cordTarget, 140); impulse(0.42); } };
-  $('bTuck').onclick = e => {
-    S.tucked = !S.tucked;
-    e.currentTarget.setAttribute('aria-pressed', String(S.tucked));
-    S.cordTarget = S.tucked ? 26 : TUCKED;
-  };
-
-  /* ---- focus session ---- */
-  let focusTimer = null;
-  $('bFocus').onclick = () => {
-    clearInterval(focusTimer);
-    chip.classList.add('show');
-    let left = 25 * 60, total = left;
-    const tick = () => {
-      left -= 18;                                 // sped up so you can see it work
-      if (left <= 0) { clearInterval(focusTimer); chip.classList.remove('show'); remind(); return; }
-      const m = Math.floor(left / 60), s = left % 60;
-      chip.firstChild.textContent = `${m}:${String(s).padStart(2, '0')}`;
-      chipFill.style.width = (100 - left / total * 100) + '%';
-    };
-    tick(); focusTimer = setInterval(tick, 120);
-  };
-
-  /* ---- typing hides it ---- */
-  let typeTimer = null;
-  $('typebox').addEventListener('input', () => {
-    clearTimeout(typeTimer);
-    if (S.kind !== 'cat') S.cordTarget = 10;        // completely out of sight
-    typeTimer = setTimeout(() => {                   // 2.5s, same as the app
-      if (S.kind !== 'cat') S.cordTarget = S.tucked ? 26 : TUCKED;
-    }, 2500);
-  });
-
-  /* ---- switching companion ---- */
-  document.querySelectorAll('[data-char]').forEach(b => b.onclick = () => {
-    document.querySelectorAll('[data-char]').forEach(o => o.setAttribute('aria-pressed', String(o === b)));
-    S.kind = b.dataset.char;
-    settleAll();
-    const hanging = S.kind !== 'cat';
-    hangGroup.style.display = hanging ? '' : 'none';
-    catGroup.style.display = hanging ? 'none' : '';
-    $('charSpider').style.display = S.kind === 'spider' ? '' : 'none';
-    $('charHanger').style.display = S.kind === 'hanger' ? '' : 'none';
-    if (hanging) { S.cordTarget = TUCKED; impulse(0.18); }
-  });
-
-  /* ---- the menu-bar clock, because an empty one looks broken ---- */
-  const tickClock = () => $('clock').textContent =
-    new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-  tickClock(); setInterval(tickClock, 10000);
-
-  if (!reduced) requestAnimationFrame(frame);
-  else { cord.setAttribute('y2', TUCKED); holder.setAttribute('transform', `translate(0 ${TUCKED})`);
-         hangGroup.setAttribute('transform', `translate(${PIN_X} ${PIN_Y})`); }
-
-  /* ---- the two clocks, further down the page ---- */
-  let ours = 0, them = 0, away = false, started = false;
-  const GOAL = 30;
-  const bOurs = $('barOurs'), bThem = $('barThem');
-  const sOurs = $('stateOurs'), sThem = $('stateThem');
-  $('bAway').onclick = e => {
-    away = !away;
-    e.currentTarget.setAttribute('aria-pressed', String(away));
-    e.currentTarget.textContent = away ? 'Come back to the desk' : 'Step away from the desk';
-    if (!started) { started = true; setInterval(clockTick, 200); }
-  };
-  function clockTick() {
-    if (!away) ours = Math.min(GOAL, ours + 1);
-    them = Math.min(GOAL, them + 1);
-    bOurs.style.width = ours / GOAL * 100 + '%';
-    bThem.style.width = them / GOAL * 100 + '%';
-    sOurs.innerHTML = ours >= GOAL ? '<span class="fired">Reminder fires — and you are here to see it</span>'
-                                   : (away ? 'paused — you are not at the keyboard' : ours + 's banked');
-    sThem.innerHTML = them >= GOAL ? '<span class="fired">Fires into an empty chair</span>'
-                                   : them + 's elapsed';
-  }
-})();
+  resize();
+  requestAnimationFrame(draw);   // the texture's onLoad reveals the canvas
+}
 </script>
 </body>
 </html>
