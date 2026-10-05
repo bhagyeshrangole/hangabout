@@ -7,6 +7,7 @@
 <meta name="description" content="A companion that hangs from the top of your Mac screen, waits until you are actually at the keyboard, and holds your reminder until you deal with it. Free for macOS.">
 <meta property="og:title" content="Hangabout">
 <meta property="og:description" content="A companion that hangs from the top of your Mac screen and makes sure you actually see your reminders.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -40,11 +41,12 @@ button,a{cursor:pointer}
 .screen{min-height:100svh;display:flex;align-items:center;position:relative}
 
 /* ---------- companion layers ---------- */
-#scene{position:fixed;inset:0;width:100vw;height:100vh;z-index:3;pointer-events:none;display:none}
-#scene.on{display:block}
 #rig{position:fixed;inset:0;width:100vw;height:100vh;z-index:3;pointer-events:none;overflow:visible}
 #rig .cord{stroke:#E6ECFF;stroke-width:2.6}
-#rig.is3d #cSpider,#rig.is3d #cord{display:none}
+#cSpider{transform-box:fill-box}
+/* it blinks on its own, the way the mark does */
+#cSpider .eye{transform-box:fill-box;transform-origin:50% 50%;animation:blink 5.4s ease-in-out infinite}
+@keyframes blink{0%,88%,100%{transform:scaleY(1)}91%,93%{transform:scaleY(.1)}96%{transform:scaleY(1)}}
 #grab{pointer-events:auto;cursor:grab;fill:transparent}
 #grab:active{cursor:grabbing}
 #balloon{
@@ -192,13 +194,40 @@ footer a{color:var(--orange)}
 
 <div id="prog"><i></i></div>
 
-<canvas id="scene" aria-hidden="true"></canvas>
 <svg id="rig" aria-hidden="true" focusable="false">
-  <defs><linearGradient id="abd" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="#FF5A4A"/><stop offset="1" stop-color="#8A1118"/></linearGradient></defs>
+  <defs>
+    <radialGradient id="body" cx="38%" cy="28%" r="78%">
+      <stop offset="0" stop-color="#F97316"/><stop offset="1" stop-color="#C2410C"/>
+    </radialGradient>
+  </defs>
   <g id="pivot">
     <line class="cord" id="cord" x1="0" y1="0" x2="0" y2="90"/>
-    <g id="holder"><image id="cSpider" href="spider.png" x="-72" y="0" width="144" height="229" preserveAspectRatio="xMidYMin meet"/></g>
+    <g id="holder">
+      <g id="cSpider" class="mark">
+        <!-- The app's mark, same geometry as Mark.swift: 126x146 design space,
+             body at (63,68) r30, eight legs at four reaches. -->
+        <g transform="scale(1.25) translate(-63 -38)">
+          <g class="legs"><path d="M48.0 57.0 Q31.0 41.0 23.0 57.0" fill="none" stroke="#C2410C" stroke-width="7.5" stroke-linecap="round"/>
+            <path d="M48.0 64.0 Q29.4 57.0 21.0 77.0" fill="none" stroke="#C2410C" stroke-width="7.5" stroke-linecap="round"/>
+            <path d="M48.0 71.0 Q27.8 73.0 19.0 97.0" fill="none" stroke="#C2410C" stroke-width="7.5" stroke-linecap="round"/>
+            <path d="M48.0 78.0 Q26.2 89.0 17.0 117.0" fill="none" stroke="#C2410C" stroke-width="7.5" stroke-linecap="round"/>
+            <path d="M78.0 57.0 Q95.0 41.0 103.0 57.0" fill="none" stroke="#C2410C" stroke-width="7.5" stroke-linecap="round"/>
+            <path d="M78.0 64.0 Q96.6 57.0 105.0 77.0" fill="none" stroke="#C2410C" stroke-width="7.5" stroke-linecap="round"/>
+            <path d="M78.0 71.0 Q98.2 73.0 107.0 97.0" fill="none" stroke="#C2410C" stroke-width="7.5" stroke-linecap="round"/>
+            <path d="M78.0 78.0 Q99.8 89.0 109.0 117.0" fill="none" stroke="#C2410C" stroke-width="7.5" stroke-linecap="round"/></g>
+          <circle cx="63" cy="68" r="30" fill="url(#body)"/>
+          <ellipse cx="44" cy="77" rx="6.5" ry="4.4" fill="#FF9D5C" opacity=".55"/>
+          <ellipse cx="82" cy="77" rx="6.5" ry="4.4" fill="#FF9D5C" opacity=".55"/>
+          <ellipse class="eye" cx="51" cy="64" rx="8.5" ry="9.6" fill="#10152A"/>
+          <ellipse class="eye" cx="75" cy="64" rx="8.5" ry="9.6" fill="#10152A"/>
+          <circle cx="48.4" cy="60.6" r="3.1" fill="#fff"/>
+          <circle cx="53.8" cy="67" r="1.5" fill="#fff" opacity=".75"/>
+          <circle cx="72.4" cy="60.6" r="3.1" fill="#fff"/>
+          <circle cx="77.8" cy="67" r="1.5" fill="#fff" opacity=".75"/>
+          <path d="M55 81 Q63 89 71 81" fill="none" stroke="#10152A" stroke-width="4" stroke-linecap="round"/>
+        </g>
+      </g>
+    </g>
   </g>
   <circle id="grab" r="58"/>
 </svg>
@@ -221,7 +250,7 @@ footer a{color:var(--orange)}
     </div>
     <p class="meta rise">macOS 14 Sonoma or later · 8 MB · no account, no Dock icon</p>
   </div>
-  <p class="hero-right">Drag it anywhere — it stays. Double-click to shoot a web.</p>
+  <p class="hero-right">Drag it anywhere — it stays. Let go and watch it climb back.</p>
   <p class="cue">Scroll<span></span></p>
 </header>
 
@@ -274,8 +303,8 @@ footer a{color:var(--orange)}
 
     <div class="cast">
       <button class="card who rise" data-tilt data-char="spider" aria-pressed="true">
-        <h3>Spider</h3><p>Hangs upside down on a line, shoots webs, and the silk stretches when you drag it before hauling itself back up.</p>
-        <span class="tag">Hanging here now · double-click it</span>
+        <h3>Spider</h3><p>Hangs from a thread and blinks at you. Drag it down and the silk stretches, then it hauls itself back up in pulls.</p>
+        <span class="tag">Hanging here now · give it a flick</span>
       </button>
       <div class="card who rise" data-tilt><h3>The hanger</h3><p>The app's own mark, drawn rather than borrowed, with a face it only shows up close. It is the menu bar icon too.</p></div>
       <div class="card who rise" data-tilt><h3>Cat</h3><p>Asleep in a corner until there is news, then gets up and walks over. Drawn in code.</p></div>
@@ -320,7 +349,7 @@ $('#mq').innerHTML=strip; $('#mq2').innerHTML=strip;
 
 const TUCK=92, DOWN=340;
 const S={angle:0,vel:0,cord:TUCK,target:TUCK,pinX:0,pinTarget:0,kind:'spider',
-         W:0,H:0,sec:0,placed:false,web:null};
+         W:0,H:0,sec:0,placed:false,phase:0,pulling:false};
 window.__hang=S;
 let W=0,H=0;
 function size(){
@@ -346,7 +375,18 @@ function frame(now){
   S.vel += -(3200/L)*Math.sin(S.angle)*dt;
   S.vel *= Math.pow(0.5,dt/2.0);
   S.angle += S.vel*dt;
-  S.cord += (S.target-S.cord)*(1-Math.pow(0.004,dt));
+  // Going down is a smooth drop. Coming back up is a climb: short pulls with
+  // a pause between them, each pull giving a small sway, so it hauls itself up
+  // the line rather than gliding like a cursor.
+  if(S.cord > S.target + 1){
+    S.phase = (S.phase + dt) % 0.55;
+    if(S.phase < 0.3){
+      S.cord = Math.max(S.target, S.cord - 430*dt);
+      if(!S.pulling){ impulse(.04); S.pulling = true; }
+    } else S.pulling = false;
+  } else {
+    S.cord += (S.target-S.cord)*(1-Math.pow(0.004,dt));
+  }
   cord.setAttribute('y2',S.cord.toFixed(1));
   holder.setAttribute('transform',`translate(0 ${S.cord.toFixed(1)})`);
   pivot.setAttribute('transform',`translate(${S.pinX.toFixed(1)} 0) rotate(${(S.angle*180/Math.PI).toFixed(2)})`);
@@ -381,13 +421,7 @@ addEventListener('pointermove',e=>{
 });
 const drop=()=>{if(drag){drag=false;S.target=balloon.classList.contains('show')?DOWN:TUCK;impulse(.1);}};
 addEventListener('pointerup',drop); addEventListener('pointercancel',drop);
-grab.addEventListener('dblclick',e=>{
-  S.target=Math.max(S.target,250); impulse(.42);
-  shootWeb(e.clientX < S.pinX ? 70 : W-70, Math.max(60, e.clientY-220));
-});
-// A web is just a target plus a clock; the 3D layer draws the strand.
-function shootWeb(tx,ty){ S.web = {tx, ty, t0: performance.now()}; }
-window.__shootWeb = shootWeb;
+grab.addEventListener('dblclick',()=>{ S.target=Math.max(S.target,250); impulse(.5); });
 
 const LINES=['Time to drink some water','Stand up and stretch','Look away for twenty seconds','Break time'];
 let n=0,hideT=null;
@@ -425,7 +459,6 @@ $('#typebox').addEventListener('input',()=>{
 
 document.querySelectorAll('[data-char]').forEach(b=>b.onclick=()=>{
   S.target=Math.max(S.target,230); impulse(.3);
-  shootWeb(S.pinX>innerWidth/2?90:innerWidth-90, 140);
 });
 
 /* cards tilt toward the cursor — depth you can feel, not just see */
@@ -472,165 +505,5 @@ else{cord.setAttribute('y2',TUCK);holder.setAttribute('transform',`translate(0 $
 })();
 </script>
 
-<script type="importmap">
-{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js"}}
-</script>
-<script type="module">
-// The 3D layer owns no state. The script above stays the source of truth for
-// the pendulum; this converts its pixel values to world units so the balloon,
-// the chip and the grab target all still land on the companion.
-import * as THREE from 'three';
-const S = window.__hang;
-const canvas = document.getElementById('scene');
-const rig = document.getElementById('rig');
-
-let renderer;
-try { renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true, powerPreference:'high-performance'}); }
-catch (e) { /* no WebGL: the flat companion stays */ }
-
-if (renderer) {
-  THREE.ColorManagement.enabled = true;
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.08;
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-  const FOV = 38, DIST = 14;
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 80);
-  camera.position.set(0, 0, DIST);
-  const visibleH = () => 2 * DIST * Math.tan(THREE.MathUtils.degToRad(FOV) / 2);
-  let PPU = 100;
-
-  scene.add(new THREE.AmbientLight(0x8fa3ff, 0.62));
-  const key = new THREE.DirectionalLight(0xfff4e6, 2.7);
-  key.position.set(-2.6, 4.6, 7.5);
-  key.castShadow = true;                        // the only shadow caster
-  key.shadow.mapSize.set(1024, 1024);
-  key.shadow.camera.near = 1; key.shadow.camera.far = 32;
-  key.shadow.camera.left = -9; key.shadow.camera.right = 9;
-  key.shadow.camera.top = 9; key.shadow.camera.bottom = -9;
-  key.shadow.radius = 6; key.shadow.bias = -0.0015;
-  scene.add(key);
-  const warm = new THREE.PointLight(0xF97316, 55, 26, 2); warm.position.set(5,-1,-4); scene.add(warm);
-  const cool = new THREE.PointLight(0x5B8CFF, 35, 24, 2); cool.position.set(-6,2,-3); scene.add(cool);
-
-  const catcher = new THREE.Mesh(new THREE.PlaneGeometry(50, 36),
-    new THREE.ShadowMaterial({opacity:0.3, depthWrite:false}));
-  catcher.position.z = -1.0; catcher.receiveShadow = true; scene.add(catcher);
-
-  const tube = (pts, r, mat) =>
-    new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 20, r, 10, false), mat);
-  const V = (x,y,z=0) => new THREE.Vector3(x,y,z);
-
-  const pivot = new THREE.Group(); scene.add(pivot);
-  const hang  = new THREE.Group(); pivot.add(hang);
-  const silk = new THREE.MeshStandardMaterial({color:0xF3F6FF, roughness:.85, emissive:0x223055, emissiveIntensity:.25});
-  const line = new THREE.Mesh(new THREE.CylinderGeometry(.013, .013, 1, 6), silk);
-  pivot.add(line);
-
-  // --- the companion: the app's own artwork, hanging on the line ---
-  // It is a finished render, so it is drawn unlit — relighting it would only
-  // fight the lighting already baked into the picture.
-  let artReady = false;
-  const tex = new THREE.TextureLoader().load('spider.png',
-    t => {
-      t.colorSpace = THREE.SRGBColorSpace;
-      t.anisotropy = renderer.capabilities.getMaxAnisotropy();
-      artReady = true;
-      canvas.classList.add('on');
-      rig.classList.add('is3d');
-    },
-    undefined,
-    () => { canvas.classList.remove('on'); rig.classList.remove('is3d'); }
-  );
-  const ART_W = 450, ART_H = 715;
-  const hero = new THREE.Group(); hang.add(hero);
-  const sprite = new THREE.Mesh(
-    new THREE.PlaneGeometry(1, 1),
-    new THREE.MeshBasicMaterial({map:tex, transparent:true, alphaTest:0.08, side:THREE.DoubleSide})
-  );
-  sprite.castShadow = true;      // alphaTest gives the shadow its real outline
-  hero.add(sprite);
-
-  // --- a web strand it can shoot ---
-  const hand = new THREE.Object3D(); hero.add(hand);   // roughly its right glove
-  const strand = new THREE.Mesh(new THREE.CylinderGeometry(.03,.012,1,7), silk);
-  strand.visible = false; scene.add(strand);
-  const splat = new THREE.Mesh(new THREE.SphereGeometry(.13,16,12), silk);
-  splat.scale.set(1,1,.35); splat.visible = false; scene.add(splat);
-  const aim = (mesh, from, to) => {
-    const dir = new THREE.Vector3().subVectors(to, from);
-    const len = dir.length() || .0001;
-    mesh.position.copy(from).addScaledVector(dir, .5);
-    mesh.scale.set(1, len, 1);
-    mesh.quaternion.setFromUnitVectors(V(0,1,0), dir.clone().normalize());
-  };
-
-  function resize(){
-    const w = innerWidth, h = innerHeight;
-    renderer.setSize(w, h, false);
-    camera.aspect = w/h; camera.updateProjectionMatrix();
-    PPU = h / visibleH();
-    // size the artwork in CSS pixels, then hang it from its own top edge
-    const ah = 230/PPU, aw = ah * (ART_W/ART_H);   // `w`/`h` are the viewport
-    sprite.scale.set(aw, ah, 1);
-    sprite.position.y = -ah/2;
-    hand.position.set(aw*0.40, -ah*0.34, 0);
-  }
-  addEventListener('resize', resize);
-
-  const toWorld = (px, py) => V((px - S.W/2)/PPU, visibleH()/2 - py/PPU, 0);
-  let mx = 0, my = 0, t = 0;
-  addEventListener('mousemove', e => {
-    mx = (e.clientX/innerWidth - .5) * 2;
-    my = -(e.clientY/innerHeight - .5) * 2;
-  });
-
-  const handWorld = new THREE.Vector3();
-  function draw(now){
-    t = now/1000;
-    const cordW = Math.max(.02, S.cord/PPU);
-
-    pivot.position.set((S.pinX - S.W/2)/PPU, visibleH()/2, 0);
-    pivot.rotation.z = -S.angle;
-    hang.position.y = -cordW;
-    line.position.y = -cordW/2; line.scale.y = cordW;
-
-    // a flat picture cannot turn far before it shows its edge
-    hero.rotation.y = Math.sin(t*.45)*.13 + S.vel*.18;
-    hero.rotation.x = Math.cos(t*.33)*.04;
-
-    // --- web shot: out fast, hold, snap back ---
-    if (S.web) {
-      const age = (now - S.web.t0) / 1000;
-      const OUT = .22, HOLD = .75, BACK = .3;
-      if (age > OUT + HOLD + BACK) { S.web = null; strand.visible = splat.visible = false; }
-      else {
-        hand.getWorldPosition(handWorld);
-        const target = toWorld(S.web.tx, S.web.ty);
-        let k = age < OUT ? age/OUT : (age < OUT+HOLD ? 1 : 1 - (age-OUT-HOLD)/BACK);
-        k = Math.max(0, Math.min(1, k));
-        const tip = handWorld.clone().lerp(target, k);
-        aim(strand, handWorld, tip);
-        strand.visible = k > .02;
-        splat.visible = k > .97;
-        splat.position.copy(target);
-        splat.scale.setScalar(1 + Math.sin(t*9)*.07);
-      }
-    }
-
-    camera.position.x = mx*.5; camera.position.y = my*.3;
-    camera.lookAt(0,0,0);
-    if (artReady) renderer.render(scene, camera);
-    requestAnimationFrame(draw);
-  }
-
-  resize();
-  requestAnimationFrame(draw);   // the texture's onLoad reveals the canvas
-}
-</script>
 </body>
 </html>

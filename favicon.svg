@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 126 126">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2E3A63"/><stop offset="1" stop-color="#141A2E"/>
+    </linearGradient>
+    <radialGradient id="body" cx="38%" cy="28%" r="78%">
+      <stop offset="0" stop-color="#F97316"/><stop offset="1" stop-color="#C2410C"/>
+    </radialGradient>
+  </defs>
+  <rect width="126" height="126" rx="28" fill="url(#sky)"/>
+  <!-- Four legs, not eight: at favicon size eight fuse into a wedge, the same
+       reason Mark.swift's compact face drops to two legs a side. -->
+  <g fill="none" stroke="#C2410C" stroke-width="11" stroke-linecap="round" transform="translate(0 6) scale(.86) translate(10 4)">
+    <path d="M78.0 57.0 Q95.0 41.0 103.0 57.0"/>
+    <path d="M78.0 78.0 Q100.4 89.0 109.0 117.0"/>
+    <path d="M48.0 57.0 Q31.0 41.0 23.0 57.0"/>
+    <path d="M48.0 78.0 Q25.6 89.0 17.0 117.0"/>
+  </g>
+  <g transform="translate(0 6) scale(.86) translate(10 4)">
+    <circle cx="63" cy="68" r="30" fill="url(#body)"/>
+    <ellipse cx="51" cy="64" rx="9.5" ry="10.6" fill="#10152A"/>
+    <ellipse cx="75" cy="64" rx="9.5" ry="10.6" fill="#10152A"/>
+    <circle cx="48" cy="60" r="3.6" fill="#fff"/>
+    <circle cx="72" cy="60" r="3.6" fill="#fff"/>
+    <path d="M55 81 Q63 90 71 81" fill="none" stroke="#10152A" stroke-width="4.6" stroke-linecap="round"/>
+  </g>
+</svg>
