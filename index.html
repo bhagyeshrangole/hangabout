@@ -47,6 +47,13 @@ button,a{cursor:pointer}
 /* it blinks on its own, the way the mark does */
 #cSpider .eye{transform-box:fill-box;transform-origin:50% 50%;animation:blink 5.4s ease-in-out infinite}
 @keyframes blink{0%,88%,100%{transform:scaleY(1)}91%,93%{transform:scaleY(.1)}96%{transform:scaleY(1)}}
+/* One face is showing at a time: happy swaps both the eyes and keeps the
+   smile, sad keeps the eyes open and only drops the mouth. */
+#cSpider .eyesHappy,#cSpider .mouthSad{display:none}
+#cSpider.happy .eye,#cSpider.happy .glint{display:none}
+#cSpider.happy .eyesHappy{display:block}
+#cSpider.sad .mouthNormal{display:none}
+#cSpider.sad .mouthSad{display:block}
 #grab{pointer-events:auto;cursor:grab;fill:transparent}
 #grab:active{cursor:grabbing}
 #balloon{
@@ -58,8 +65,13 @@ button,a{cursor:pointer}
   transition:opacity .2s ease,transform .3s cubic-bezier(.2,1.5,.45,1);pointer-events:none;
 }
 #balloon.show{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto}
-#balloon .sub{display:block;margin-top:6px;font-family:var(--body);font-weight:700;font-size:11.5px;
-  text-transform:uppercase;letter-spacing:.09em;color:#8A7F6B}
+#balloon .answers{display:flex;gap:8px;margin-top:11px}
+#balloon .ans{flex:1;border:0;border-radius:11px;padding:8px 10px;cursor:pointer;
+  font-family:var(--display);font-weight:600;font-size:13.5px;letter-spacing:.01em;
+  background:#EFE7D6;color:#5C5444;transition:transform .12s ease,filter .12s ease}
+#balloon .ans--done{background:linear-gradient(180deg,var(--orange),#EA6A0C);color:#fff}
+#balloon .ans:hover{transform:translateY(-1px);filter:brightness(1.07)}
+#balloon .ans:active{transform:translateY(1px)}
 #balloon::after{content:"";position:absolute;left:50%;bottom:-8px;width:18px;height:18px;
   background:#FFFBF0;transform:translateX(-50%) rotate(45deg);border-radius:0 0 4px 0}
 #chip{position:fixed;z-index:6;background:rgba(11,15,28,.82);color:#fff;
@@ -220,18 +232,28 @@ footer a{color:var(--orange)}
           <ellipse cx="82" cy="77" rx="6.5" ry="4.4" fill="#FF9D5C" opacity=".55"/>
           <ellipse class="eye" cx="51" cy="64" rx="8.5" ry="9.6" fill="#10152A"/>
           <ellipse class="eye" cx="75" cy="64" rx="8.5" ry="9.6" fill="#10152A"/>
-          <circle cx="48.4" cy="60.6" r="3.1" fill="#fff"/>
-          <circle cx="53.8" cy="67" r="1.5" fill="#fff" opacity=".75"/>
-          <circle cx="72.4" cy="60.6" r="3.1" fill="#fff"/>
-          <circle cx="77.8" cy="67" r="1.5" fill="#fff" opacity=".75"/>
-          <path d="M55 81 Q63 89 71 81" fill="none" stroke="#10152A" stroke-width="4" stroke-linecap="round"/>
+          <circle class="glint" cx="48.4" cy="60.6" r="3.1" fill="#fff"/>
+          <circle class="glint" cx="53.8" cy="67" r="1.5" fill="#fff" opacity=".75"/>
+          <circle class="glint" cx="72.4" cy="60.6" r="3.1" fill="#fff"/>
+          <circle class="glint" cx="77.8" cy="67" r="1.5" fill="#fff" opacity=".75"/>
+          <!-- Done wears these instead of the open eyes. Squashing the open
+               eye read as a blink caught mid-frame, so happy is a different
+               shape entirely — the same two arcs Mark.swift strokes. -->
+          <g class="eyesHappy">
+            <path d="M42.5 67 Q51 55 59.5 67" fill="none" stroke="#10152A" stroke-width="5.4" stroke-linecap="round"/>
+            <path d="M66.5 67 Q75 55 83.5 67" fill="none" stroke="#10152A" stroke-width="5.4" stroke-linecap="round"/>
+          </g>
+          <path class="mouth mouthNormal" d="M55 81 Q63 89 71 81" fill="none" stroke="#10152A" stroke-width="4" stroke-linecap="round"/>
+          <!-- Set lower as well as turned down, so the whole face droops
+               rather than just the line. -->
+          <path class="mouth mouthSad" d="M55.5 87 Q63 79 70.5 87" fill="none" stroke="#10152A" stroke-width="4" stroke-linecap="round"/>
         </g>
       </g>
     </g>
   </g>
   <circle id="grab" r="58"/>
 </svg>
-<div id="balloon" role="status"><span id="bText">Time to drink some water</span><span class="sub">Click to snooze 5 min</span></div>
+<div id="balloon" role="status"><span id="bText">Time to drink some water</span><span class="answers"><button class="ans ans--done" id="bDone">Done</button><button class="ans" id="bLater">Later</button></span></div>
 <div id="chip" aria-hidden="true">25:00<span class="track"><i id="chipFill"></i></span></div>
 
 <!-- ======== 1 ======== -->
@@ -279,7 +301,7 @@ footer a{color:var(--orange)}
       <div class="card rise" data-tilt>
         <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#2A1403" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
         <h3>Then it holds on</h3>
-        <p>It comes down the screen, swings to catch your eye, and keeps the message up until you deal with it. Click it to dismiss, click the balloon to snooze.</p>
+        <p>It comes down the screen, swings to catch your eye, and keeps the message up until you deal with it. Answer it with Done or Later — it pulls a face either way.</p>
         <button class="mini" id="bRemind2">Send a reminder now →</button>
       </div>
 
@@ -433,7 +455,20 @@ function remind(){
   hideT=setTimeout(dismiss,9500);
 }
 function dismiss(){balloon.classList.remove('show');S.target=TUCK;}
-balloon.addEventListener('click',()=>{$('#bText').textContent='Snoozed — back in 5';clearTimeout(hideT);hideT=setTimeout(dismiss,1200);});
+
+/* Done and Later are the app's own two answers, and they are the only reason
+   the spider has more than one face. It wears the answer on the way back up,
+   then forgets it — the same 2.8s the app gives a reaction. */
+const cSpider=$('#cSpider'); let moodT=null;
+function answer(mood){
+  cSpider.classList.remove('happy','sad');
+  cSpider.classList.add(mood);
+  clearTimeout(moodT);
+  moodT=setTimeout(()=>cSpider.classList.remove('happy','sad'),2800);
+  clearTimeout(hideT); dismiss();
+}
+$('#bDone').onclick=e=>{e.stopPropagation();answer('happy');};
+$('#bLater').onclick=e=>{e.stopPropagation();answer('sad');};
 grab.addEventListener('click',()=>{if(balloon.classList.contains('show'))dismiss();});
 $('#bRemind').onclick=remind; $('#bRemind2').onclick=remind;
 
