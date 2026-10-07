@@ -65,6 +65,8 @@ button,a{cursor:pointer}
   transition:opacity .2s ease,transform .3s cubic-bezier(.2,1.5,.45,1);pointer-events:none;
 }
 #balloon.show{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto}
+#balloon.lift{transform:translate(-50%,calc(-100% - 14px)) scale(.9)}
+#balloon.lift.show{transform:translate(-50%,calc(-100% - 14px)) scale(1)}
 #balloon .answers{display:flex;gap:8px;margin-top:11px}
 #balloon .ans{flex:1;border:0;border-radius:11px;padding:8px 10px;cursor:pointer;
   font-family:var(--display);font-weight:600;font-size:13.5px;letter-spacing:.01em;
@@ -235,6 +237,11 @@ footer a{color:var(--orange)}
   <g id="pivot">
     <line class="cord" id="cord" x1="0" y1="0" x2="0" y2="90"/>
     <g id="holder">
+      <!-- Every other companion is a picture rather than a drawing. It shares
+           the holder with the mark so the cord, the balloon and the drag
+           handle all keep working without knowing which one is on screen. -->
+      <image id="cPhoto" href="" width="230" height="200" x="-115" y="-12"
+             preserveAspectRatio="xMidYMid meet" style="display:none"/>
       <g id="cSpider" class="mark">
         <!-- The app's mark, same geometry as Mark.swift: 126x146 design space,
              body at (63,68) r30, eight legs at four reaches. -->
@@ -350,11 +357,11 @@ footer a{color:var(--orange)}
         <span class="tag">The default · give it a flick</span>
         <a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a>
       </div>
-      <div class="card who rise" data-tilt><span class="shot"><img src="img/spiderMan.png" alt="Spider-Man hanging from a web" loading="lazy" width="320" height="320"></span><h3>Spider-Man</h3><p>The original, on the same thread and with the same moves. The mark took over as the default; it did not replace him.</p><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
-      <div class="card who rise" data-tilt><span class="shot"><img src="img/ironMan.png" alt="Iron Man in flight" loading="lazy" width="320" height="320"></span><h3>Iron Man &amp; Tony</h3><p>One lights the thrusters only when he is going somewhere. The other suits up when there is something to do.</p><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
-      <div class="card who rise" data-tilt><span class="shot"><img src="img/cap.png" alt="Captain America standing at ease" loading="lazy" width="320" height="320"></span><h3>Captain America</h3><p>Stands at ease and throws the shield. It glances off two screen edges and comes home when the balloon does.</p><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
-      <div class="card who rise" data-tilt><span class="shot"><img src="img/cat.png" alt="The drawn cat, ears up" loading="lazy" width="320" height="320"></span><h3>Cat</h3><p>Asleep in a corner until there is news, then gets up and walks over. Drawn in code.</p><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
-      <div class="card who rise" data-tilt><span class="shot"><img src="img/dog.png" alt="The drawn dog, ears up" loading="lazy" width="320" height="320"></span><h3>Dog</h3><p>The same, with floppy ears and a tail that gives the game away.</p><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
+      <div class="card who rise" data-tilt data-char="spiderMan" aria-pressed="false"><span class="shot"><img src="img/spiderMan.png" alt="Spider-Man hanging from a web" loading="lazy" width="320" height="320"></span><h3>Spider-Man</h3><p>The original, on the same thread and with the same moves. The mark took over as the default; it did not replace him.</p><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
+      <div class="card who rise" data-tilt data-char="ironMan" aria-pressed="false"><span class="shot"><img src="img/ironMan.png" alt="Iron Man in flight" loading="lazy" width="320" height="320"></span><h3>Iron Man &amp; Tony</h3><p>One lights the thrusters only when he is going somewhere. The other suits up when there is something to do.</p><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
+      <div class="card who rise" data-tilt data-char="cap" aria-pressed="false"><span class="shot"><img src="img/cap.png" alt="Captain America standing at ease" loading="lazy" width="320" height="320"></span><h3>Captain America</h3><p>Stands at ease and throws the shield. It glances off two screen edges and comes home when the balloon does.</p><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
+      <div class="card who rise" data-tilt data-char="cat" aria-pressed="false"><span class="shot"><img src="img/cat.png" alt="The drawn cat, ears up" loading="lazy" width="320" height="320"></span><h3>Cat</h3><p>Asleep in a corner until there is news, then gets up and walks over. Drawn in code.</p><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
+      <div class="card who rise" data-tilt data-char="dog" aria-pressed="false"><span class="shot"><img src="img/dog.png" alt="The drawn dog, ears up" loading="lazy" width="320" height="320"></span><h3>Dog</h3><p>The same, with floppy ears and a tail that gives the game away.</p><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
     </div>
 
     <div class="get" id="install">
@@ -392,7 +399,7 @@ const strip=WORDS.concat(WORDS).map(w=>`<span>${w}</span>${STAR}`).join('');
 $('#mq').innerHTML=strip; $('#mq2').innerHTML=strip;
 
 const TUCK=92, DOWN=340;
-const S={angle:0,vel:0,cord:TUCK,target:TUCK,pinX:0,pinTarget:0,kind:'spider',
+const S={angle:0,vel:0,cord:TUCK,target:TUCK,pinX:0,pinTarget:0,kind:'spider',hangs:true,
          W:0,H:0,sec:0,placed:false,phase:0,pulling:false};
 window.__hang=S;
 let W=0,H=0;
@@ -415,10 +422,12 @@ function frame(now){
     S.pinTarget = S.sec===0 ? W*0.78 : W*0.50;
     S.pinX += (S.pinTarget-S.pinX)*(1-Math.pow(0.05,dt));
   }
-  const L=Math.max(80,S.cord);
-  S.vel += -(3200/L)*Math.sin(S.angle)*dt;
-  S.vel *= Math.pow(0.5,dt/2.0);
-  S.angle += S.vel*dt;
+  if(S.hangs){
+    const L=Math.max(80,S.cord);
+    S.vel += -(3200/L)*Math.sin(S.angle)*dt;
+    S.vel *= Math.pow(0.5,dt/2.0);
+    S.angle += S.vel*dt;
+  } else { S.angle=0; S.vel=0; }
   // Going down is a smooth drop. Coming back up is a climb: short pulls with
   // a pause between them, each pull giving a small sway, so it hauls itself up
   // the line rather than gliding like a cursor.
@@ -436,8 +445,13 @@ function frame(now){
   pivot.setAttribute('transform',`translate(${S.pinX.toFixed(1)} 0) rotate(${(S.angle*180/Math.PI).toFixed(2)})`);
   const c=charm();
   grab.setAttribute('cx',c.x); grab.setAttribute('cy',c.y);
-  if(balloon.classList.contains('show')){balloon.style.left=c.x+'px';balloon.style.top=(c.y-124)+'px';}
-  if(chip.classList.contains('show')){chip.style.left=c.x+'px';chip.style.top=(c.y-(balloon.classList.contains('show')?196:92))+'px';}
+  // A hanger's art falls below the point, so the balloon clears its head at
+  // a fixed lift. One that stands reaches up from the point instead, and the
+  // balloon is flipped to sit on top of whatever height it turned out to be.
+  const lift = S.hangs ? 124 : 260;
+  balloon.classList.toggle('lift', !S.hangs);
+  if(balloon.classList.contains('show')){balloon.style.left=c.x+'px';balloon.style.top=(c.y-lift)+'px';}
+  if(chip.classList.contains('show')){chip.style.left=c.x+'px';chip.style.top=(c.y-lift-(balloon.classList.contains('show')?72:-32))+'px';}
   requestAnimationFrame(frame);
 }
 
@@ -463,20 +477,22 @@ addEventListener('pointermove',e=>{
   S.target=Math.max(110,Math.min(e.clientY, DOWN+190*(1-Math.exp(-beyond/190))));
   S.angle*=0.82; S.vel*=0.82;
 });
-const drop=()=>{if(drag){drag=false;S.target=balloon.classList.contains('show')?DOWN:TUCK;impulse(.1);}};
+const drop=()=>{if(!drag)return;drag=false;if(!S.hangs)return;
+  S.target=balloon.classList.contains('show')?DOWN:TUCK;impulse(.1);};
 addEventListener('pointerup',drop); addEventListener('pointercancel',drop);
-grab.addEventListener('dblclick',()=>{ S.target=Math.max(S.target,250); impulse(.5); });
+grab.addEventListener('dblclick',()=>{ if(!S.hangs)return; S.target=Math.max(S.target,250); impulse(.5); });
 
 const LINES=['Time to drink some water','Stand up and stretch','Look away for twenty seconds','Break time'];
 let n=0,hideT=null;
 function remind(){
   clearTimeout(hideT);
-  $('#bText').textContent=LINES[n++%LINES.length];
-  S.target=DOWN; impulse(.34);
+  const lines=(CHARS[S.kind]||{}).say||LINES;
+  $('#bText').textContent=lines[n++%lines.length];
+  if(S.hangs){ S.target=DOWN; impulse(.34); }
   setTimeout(()=>balloon.classList.add('show'),380);
   hideT=setTimeout(dismiss,9500);
 }
-function dismiss(){balloon.classList.remove('show');S.target=TUCK;}
+function dismiss(){balloon.classList.remove('show');if(S.hangs)S.target=TUCK;}
 
 /* Done and Later are the app's own two answers, and they are the only reason
    the spider has more than one face. It wears the answer on the way back up,
@@ -510,14 +526,58 @@ $('#bFocus').onclick=()=>{
 let tT=null;
 $('#typebox').addEventListener('input',()=>{
   clearTimeout(tT);
+  if(!S.hangs) return;
   if(!balloon.classList.contains('show')) S.target=-40;
   tT=setTimeout(()=>{if(!balloon.classList.contains('show'))S.target=TUCK;},2500);
 });
 
 document.querySelectorAll('.who .getit').forEach(a=>a.addEventListener('click',e=>e.stopPropagation()));
-document.querySelectorAll('[data-char]').forEach(b=>b.onclick=()=>{
-  S.target=Math.max(S.target,230); impulse(.3);
-});
+
+/* Picking a card puts that companion on the page. Two of them hang from the
+   thread; the rest stand, which is exactly the split the app makes — so the
+   cord goes away for those and the pendulum stops being integrated rather
+   than being damped to nothing. Lines are each character's own, lifted from
+   Companions.swift. */
+const CHARS={
+  spider:{hangs:true, say:['Water. The good stuff.','Up you get. Stretch those two legs.',"Look at something far away. I'll wait."]},
+  spiderMan:{img:'img/spiderMan.png', hangs:true,
+    say:['Aunt May says drink water.','Dude, your back is gonna hate you.','Twenty seconds — look at something far away!']},
+  ironMan:{img:'img/ironMan.png', hangs:false,
+    say:['Hydrate. JARVIS insists.',"Up. You're seizing like a bad servo.",'Look away. Twenty seconds. JARVIS is watching.']},
+  cap:{img:'img/cap.png', hangs:false,
+    say:['Soldier. Hydrate.','On your feet. I can do this all day — can you?','Eyes off the screen. Twenty seconds.']},
+  cat:{img:'img/cat.png', hangs:false,
+    say:['Drink some water','Stand up and stretch','Look away for twenty seconds']},
+  dog:{img:'img/dog.png', hangs:false,
+    say:['Drink some water','Stand up and stretch','Look away for twenty seconds']}
+};
+const cPhoto=$('#cPhoto'), cMark=$('#cSpider');
+
+function pick(id){
+  const c=CHARS[id]; if(!c) return;
+  S.kind=id; S.hangs=c.hangs; n=0;
+  cMark.style.display = c.img ? 'none' : '';
+  cPhoto.style.display = c.img ? '' : 'none';
+  if(c.img){
+    cPhoto.setAttribute('href', c.img);
+    // A hanger dangles below the thread; one that stands rests its feet on
+    // the point instead, so the same y means two different things. The
+    // standing box is also taller: the full-body art is tall and thin, and
+    // fitted into the hanger's box it shrank to nothing.
+    const w = c.hangs ? 210 : 250, h = c.hangs ? 220 : 260;
+    cPhoto.setAttribute('width', w); cPhoto.setAttribute('height', h);
+    cPhoto.setAttribute('x', -w/2); cPhoto.setAttribute('y', c.hangs ? -8 : -h);
+  }
+  cord.style.display = c.hangs ? '' : 'none';
+  S.angle=0; S.vel=0;
+  S.placed=!c.hangs;
+  if(!c.hangs){ S.pinX=Math.min(S.pinX, W-150); S.target=H-70; }
+  else if(S.target<TUCK+10) S.target=TUCK;
+  document.querySelectorAll('[data-char]').forEach(el=>
+    el.setAttribute('aria-pressed', el.dataset.char===id ? 'true' : 'false'));
+  remind();
+}
+document.querySelectorAll('[data-char]').forEach(b=>b.onclick=()=>pick(b.dataset.char));
 
 /* cards tilt toward the cursor — depth you can feel, not just see */
 document.querySelectorAll('[data-tilt]').forEach(el=>{
