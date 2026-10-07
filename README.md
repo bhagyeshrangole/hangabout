@@ -18,7 +18,7 @@ Apple M-something, you are good. If it says Intel, this one is not for you.
 
 ## Download
 
-### [⬇ Download Hangabout](https://github.com/bhagyeshrangole/hangabout-releases/releases/latest/download/Hangabout.zip)
+### [⬇ Download Hangabout](https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip)
 
 That link always gives you the newest version. Then:
 
