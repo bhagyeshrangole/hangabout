@@ -185,6 +185,26 @@ h1 .o{display:block;background:linear-gradient(170deg,#FFD089,var(--orange) 55%,
   text-transform:uppercase;color:var(--amber)}
 .who[aria-pressed=true]{border-color:var(--orange);
   box-shadow:0 26px 54px rgba(249,115,22,.3), 0 0 0 1px var(--orange) inset}
+/* A card that says "asleep in a corner" with nothing to look at is a worse
+   advert than one you can see. The portrait sits on its own ground so six
+   drawings of different proportions still line up. */
+.who{display:flex;flex-direction:column}
+.who .shot{display:grid;place-items:center;height:176px;margin:-8px -8px 14px;
+  border-radius:16px;background:radial-gradient(60% 70% at 50% 42%,rgba(255,255,255,.1),rgba(255,255,255,.015));
+  overflow:hidden}
+/* Capped on both axes: the full-body figures are tall and thin and the drawn
+   animals are wide, so height alone sizes one group and starves the other. */
+.who .shot img{max-height:158px;max-width:88%;width:auto;height:auto;
+  filter:drop-shadow(0 12px 22px rgba(0,0,0,.55));
+  transition:transform .35s cubic-bezier(.2,1.4,.4,1)}
+.who:hover .shot img{transform:translateY(-6px) scale(1.05)}
+.who p{flex:1}
+.who .getit{display:inline-flex;align-items:center;gap:7px;align-self:flex-start;margin-top:14px;
+  padding:8px 13px;border-radius:11px;text-decoration:none;
+  font-family:var(--display);font-weight:600;font-size:13px;
+  background:rgba(249,115,22,.14);color:var(--amber);border:1px solid rgba(249,115,22,.4);
+  transition:background .15s ease,transform .15s ease}
+.who .getit:hover{background:var(--orange);color:#fff;transform:translateY(-1px)}
 .get{display:grid;grid-template-columns:1.1fr 1fr;gap:28px;align-items:center;margin-top:52px}
 @media (max-width:900px){.get{grid-template-columns:1fr}}
 .steps{list-style:none;margin:0;padding:0;display:grid;gap:10px}
@@ -324,15 +344,17 @@ footer a{color:var(--orange)}
     <p class="lede rise">Some hang from a thread at the top of the screen. Others stand on the floor and walk over when they have something to say.</p>
 
     <div class="cast">
-      <button class="card who rise" data-tilt data-char="spider" aria-pressed="true">
-        <h3>Spider</h3><p>The app's own mark and the one you get out of the box. Hangs from a thread and blinks at you; drag it down and the silk stretches, then it hauls itself back up in pulls. It is the menu bar icon too.</p>
+      <div class="card who rise" data-tilt data-char="spider" aria-pressed="true">
+        <span class="shot"><img src="img/spider.png" alt="The spider companion" loading="lazy" width="320" height="320"></span>
+        <h3>Spider</h3><p>The app's own mark and the one you get out of the box. Hangs from a thread and blinks at you; drag it down and the silk stretches. It is the menu bar icon too.</p>
         <span class="tag">The default · give it a flick</span>
-      </button>
-      <div class="card who rise" data-tilt><h3>Spider-Man</h3><p>The original, on the same thread and with the same moves. The mark took over as the default; it did not replace him.</p></div>
-      <div class="card who rise" data-tilt><h3>Iron Man &amp; Tony</h3><p>One lights the thrusters only when he is going somewhere. The other suits up when there is something to do.</p></div>
-      <div class="card who rise" data-tilt><h3>Captain America</h3><p>Stands at ease and throws the shield. It glances off two screen edges and comes home when the balloon does.</p></div>
-      <div class="card who rise" data-tilt><h3>Cat</h3><p>Asleep in a corner until there is news, then gets up and walks over. Drawn in code.</p></div>
-      <div class="card who rise" data-tilt><h3>Dog</h3><p>The same, with floppy ears and a tail that gives the game away.</p></div>
+        <a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a>
+      </div>
+      <div class="card who rise" data-tilt><span class="shot"><img src="img/spiderMan.png" alt="Spider-Man hanging from a web" loading="lazy" width="320" height="320"></span><h3>Spider-Man</h3><p>The original, on the same thread and with the same moves. The mark took over as the default; it did not replace him.</p><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
+      <div class="card who rise" data-tilt><span class="shot"><img src="img/ironMan.png" alt="Iron Man in flight" loading="lazy" width="320" height="320"></span><h3>Iron Man &amp; Tony</h3><p>One lights the thrusters only when he is going somewhere. The other suits up when there is something to do.</p><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
+      <div class="card who rise" data-tilt><span class="shot"><img src="img/cap.png" alt="Captain America standing at ease" loading="lazy" width="320" height="320"></span><h3>Captain America</h3><p>Stands at ease and throws the shield. It glances off two screen edges and comes home when the balloon does.</p><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
+      <div class="card who rise" data-tilt><span class="shot"><img src="img/cat.png" alt="The drawn cat, ears up" loading="lazy" width="320" height="320"></span><h3>Cat</h3><p>Asleep in a corner until there is news, then gets up and walks over. Drawn in code.</p><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
+      <div class="card who rise" data-tilt><span class="shot"><img src="img/dog.png" alt="The drawn dog, ears up" loading="lazy" width="320" height="320"></span><h3>Dog</h3><p>The same, with floppy ears and a tail that gives the game away.</p><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
     </div>
 
     <div class="get" id="install">
@@ -492,6 +514,7 @@ $('#typebox').addEventListener('input',()=>{
   tT=setTimeout(()=>{if(!balloon.classList.contains('show'))S.target=TUCK;},2500);
 });
 
+document.querySelectorAll('.who .getit').forEach(a=>a.addEventListener('click',e=>e.stopPropagation()));
 document.querySelectorAll('[data-char]').forEach(b=>b.onclick=()=>{
   S.target=Math.max(S.target,230); impulse(.3);
 });
