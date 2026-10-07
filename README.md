@@ -1,12 +1,13 @@
 # Hangabout
 
-A lucky charm that hangs from the top of your Mac screen. It sways while you
+A companion that hangs from the top of your Mac screen. It sways while you
 work, ignores every click, and swings when you flick it.
 
 It also keeps your reminders. Instead of a notification that disappears before
 you read it, the thing you asked to be reminded about is written on a card the
-charm is holding — still there an hour later, still there after you switch
-Spaces.
+companion is holding — still there an hour later, still there after you switch
+Spaces. You answer it with **Done** or **Later**, and it pulls a face either
+way.
 
 ## Before you download
 
@@ -53,9 +54,13 @@ You only do this once. From then on it opens like any other app.
 
 ## What you will see
 
-A charm appears hanging from the **top-right of your screen**, and a small
-hanger icon appears in your **menu bar**. That menu is where everything lives —
-reminders, which companion is hanging there, settings, and Quit.
+A spider appears hanging from the **top-right of your screen**, and the same
+spider appears in your **menu bar**. That menu is where everything lives —
+reminders, alarms, which companion is hanging there, settings, and Quit.
+
+There are seven companions to choose from: the spider, Spider-Man, Iron Man,
+Tony Stark, Captain America, a cat and a dog. Some hang from a thread; others
+stand on the floor and walk over when they have something to say.
 
 If you set a reminder tied to a meeting, macOS will ask for **Calendar access**.
 That is so the charm can warn you before a meeting starts. Say no and
@@ -63,23 +68,43 @@ everything else still works.
 
 ## Using it
 
-- **Flick the charm** with your cursor to make it swing.
+- **Flick the companion** with your cursor to make it swing.
 - **Hold ⌥ (Option) and drag** to slide it anywhere along the top of the screen.
-- It tucks itself away while you type and stays still while you work. That is
-  deliberate — something that sways all day teaches you to ignore it.
-- To quit: hanger icon in the menu bar → **Quit**.
+- **Answer a reminder** with Done or Later. Done earns a happy face, Later a
+  sad one.
+- It stays still while you work rather than swaying all day, because something
+  always moving teaches you to ignore it.
+- **Hide it** from the menu, or with ⌃⌥⌘H. Hiding stops it being looked at —
+  your reminders and alarms still arrive, and it ducks back into hiding once
+  you have answered.
+- To quit: spider in the menu bar → **Quit**.
 
 ## Troubleshooting
 
 **Nothing appeared after I opened it.** Hangabout has no Dock icon by design.
-Look for the hanger in your menu bar, top-right. If it is there, the app is
-running — the charm may just be tucked away. Click the hanger to bring it back.
+Look for the spider in your menu bar, top-right. If it is there, the app is
+running — the companion may just be tucked away. Click the menu bar spider to
+bring it back.
+
+**It keeps vanishing while I type.** That is *Hide while typing*, and it is off
+by default — switch it off again in the menu bar. It waits two and a half
+minutes after your last keystroke before coming back, which is deliberate: at a
+few seconds it flickered in and out every time you paused to think.
 
 **"The application cannot be opened" / nothing happens at all.** Almost always
 an Intel Mac. Check Apple menu → About This Mac → Chip.
 
 **I want it gone.** Quit from the menu bar, then drag `Hangabout.app` from
 Applications to the Trash. It leaves nothing else behind.
+
+## Updates
+
+Hangabout checks for a new version when it launches, and once an hour while it
+is running. When there is one, the companion says so and a **Get Hangabout…**
+item appears in the menu above Quit. Clicking it brings you back here.
+
+It never installs anything by itself — you download and drag, same as the first
+time. Your settings carry across.
 
 ## Source
 
