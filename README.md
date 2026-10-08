@@ -100,11 +100,22 @@ Applications to the Trash. It leaves nothing else behind.
 ## Updates
 
 Hangabout checks for a new version when it launches, and once an hour while it
-is running. When there is one, the companion says so and a **Get Hangabout…**
-item appears in the menu above Quit. Clicking it brings you back here.
+is running. When there is one your companion asks — *"Hangabout 0.6 is out —
+shall I fetch it?"* — with two buttons: **Update** and **Later**.
 
-It never installs anything by itself — you download and drag, same as the first
-time. Your settings carry across.
+**Update** is the whole job. It downloads the new version, swaps itself over
+and reopens. No download, no drag, and none of the right-click business below
+— that is only needed for files a browser downloaded. Your settings, reminders
+and alarms carry across.
+
+**Later** puts it away for a day. Your companion pulls a face and gets on with
+things, and asks again tomorrow. Ignoring the balloon entirely does the same.
+An **Update to Hangabout…** item sits in the menu above Quit the whole time,
+so you never have to wait to be asked.
+
+If the update cannot be installed — Hangabout is somewhere you do not have
+permission to write, for instance — it says so and opens the download page
+instead, and installing by hand still works.
 
 ## Source
 
