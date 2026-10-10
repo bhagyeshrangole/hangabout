@@ -347,7 +347,7 @@ footer a{color:var(--orange)}
 <section class="screen" data-sec="2">
   <div class="wrap">
     <p class="kicker rise">The cast</p>
-    <h2 class="rise" style="font-size:clamp(34px,5.2vw,68px)">Seven of them.<br>Pick your favourite.</h2>
+    <h2 class="rise" style="font-size:clamp(34px,5.2vw,68px)">Eight of them.<br>Pick your favourite.</h2>
     <p class="lede rise">Some hang from a thread at the top of the screen. Others stand on the floor and walk over when they have something to say.</p>
 
     <div class="cast">
@@ -357,6 +357,7 @@ footer a{color:var(--orange)}
         <span class="tag">The default · give it a flick</span>
         <a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a>
       </div>
+      <div class="card who rise" data-tilt data-char="ironbot" aria-pressed="false"><span class="shot"><img src="img/ironbot.png" alt="Ironbot, red and gold, standing" loading="lazy" width="320" height="320"></span><h3>Ironbot</h3><p>The app's own hero, drawn for it rather than borrowed. Stands on the floor, lights the thrusters when it has somewhere to be, and fires a beam from each palm. Double-click and it does both.</p><span class="tag">Original &middot; fires from both palms</span><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
       <div class="card who rise" data-tilt data-char="spiderMan" aria-pressed="false"><span class="shot"><img src="img/spiderMan.png" alt="Spider-Man hanging from a web" loading="lazy" width="320" height="320"></span><h3>Spider-Man</h3><p>The original, on the same thread and with the same moves. The mark took over as the default; it did not replace him.</p><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
       <div class="card who rise" data-tilt data-char="ironMan" aria-pressed="false"><span class="shot"><img src="img/ironMan.png" alt="Iron Man in flight" loading="lazy" width="320" height="320"></span><h3>Iron Man &amp; Tony</h3><p>One lights the thrusters only when he is going somewhere. The other suits up when there is something to do.</p><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
       <div class="card who rise" data-tilt data-char="cap" aria-pressed="false"><span class="shot"><img src="img/cap.png" alt="Captain America standing at ease" loading="lazy" width="320" height="320"></span><h3>Captain America</h3><p>Stands at ease and throws the shield. It glances off two screen edges and comes home when the balloon does.</p><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
@@ -541,6 +542,8 @@ document.querySelectorAll('.who .getit').forEach(a=>a.addEventListener('click',e
    Companions.swift. */
 const CHARS={
   spider:{hangs:true, say:['Water. The good stuff.','Up you get. Stretch those two legs.',"Look at something far away. I'll wait."]},
+  ironbot:{img:'img/ironbot.png', hangs:false,
+    say:['Coolant levels low. Drink something.','Stand up. Your servos are seizing.','Look at something far away. I will hold position.']},
   spiderMan:{img:'img/spiderMan.png', hangs:true,
     say:['Aunt May says drink water.','Dude, your back is gonna hate you.','Twenty seconds — look at something far away!']},
   ironMan:{img:'img/ironMan.png', hangs:false,
