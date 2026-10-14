@@ -76,7 +76,7 @@ button{font:inherit;cursor:pointer;color:inherit;border:0}
 .blob.c{width:130px;height:130px;left:-30px;bottom:8%;background:var(--rose);animation-delay:-4s}
 .blob.d{width:60px;height:60px;right:30%;bottom:30%;background:var(--mint);animation-delay:-1s;border-radius:22px;transform:rotate(18deg)}
 @keyframes float{50%{translate:0 -22px}}
-.hero h1{font-size:clamp(76px,14vw,210px);letter-spacing:-.03em;margin:24px 0 14px;color:#fff;
+.hero h1{font-size:clamp(44px,17vw,210px);letter-spacing:-.03em;margin:24px 0 14px;color:#fff;
   text-shadow:0 2px 0 #C9D0E8,0 4px 0 #AAB3D2,0 6px 0 #8C96BB,0 8px 0 #6F79A0,0 22px 30px rgba(0,0,0,.6)}
 .hero h1 .o{color:var(--orange);text-shadow:0 2px 0 #F27434,0 4px 0 #E3662A,0 6px 0 #D45920,0 8px 0 #C24D18,0 22px 30px rgba(0,0,0,.6)}
 .hero .lede{max-width:34ch;font-size:clamp(20px,2vw,26px);color:var(--soft)}
@@ -177,6 +177,16 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
 @media (prefers-reduced-motion:reduce){
   *{transition:none!important;animation:none!important}
   .rise{opacity:1;transform:none}
+}
+/* On a phone the spider tucks over the top of the hero, and the badge and
+   big blobs landed on the buttons. Start the copy below the spider, keep
+   the blobs small and out of the way, and drop the badge. */
+@media (max-width:600px){
+  .hero{align-items:start;padding-top:230px}
+  .stamp{display:none}
+  .blob.a{width:110px;height:110px;right:-40px;top:auto;bottom:4%}
+  .blob.c{width:80px;height:80px;bottom:2%}
+  .blob.d{display:none}
 }
 </style>
 </head>
