@@ -103,6 +103,20 @@ button{font:inherit;cursor:pointer;color:inherit;border:0}
 .ch--yellow{background:linear-gradient(160deg,#1C5A50,var(--ch2))}
 .ch--blue{background:linear-gradient(160deg,#22406E,var(--ch3))}
 .ch--pink{background:linear-gradient(160deg,#3A2E6E,var(--ch4))}
+.ch--wine{background:linear-gradient(160deg,#5A2338,#3A1626)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:48px}
+@media (max-width:900px){.two{grid-template-columns:1fr}}
+.two h3{font-size:30px;margin-bottom:6px}
+.two .sub{margin:0 0 18px;color:var(--soft);font-size:16px}
+.row{display:flex;align-items:center;gap:12px;padding:14px 16px;margin-top:12px;border-radius:22px;background:var(--deep);box-shadow:var(--clay-in)}
+.row .what{flex:1;font-weight:800;line-height:1.3}
+.row small{display:block;font-size:13px;color:var(--soft);font-weight:800}
+.row .tick{flex:none;padding:8px 13px;border-radius:14px;font-weight:900;font-size:14px;color:var(--ink);box-shadow:var(--clay-pop);transition:transform .2s var(--pop)}
+.row .tick:active{transform:scale(.9)}
+.row .tick.ok{background:var(--mint)} .row .tick.no{background:var(--rose)}
+.row button.what{all:unset;flex:1;font-weight:800;line-height:1.3;cursor:pointer}
+.row button.what:focus-visible{outline:4px solid #7C5CFF;outline-offset:4px;border-radius:8px}
+.bell{flex:none;font-size:12px;font-weight:900;padding:5px 10px;border-radius:99px;background:var(--butter);color:var(--ink)}
 .num{font-family:var(--display);font-size:20px;display:inline-flex;align-items:center;gap:12px;margin-bottom:22px}
 .num b{display:grid;place-items:center;width:50px;height:50px;border-radius:18px;background:var(--surf);color:var(--orange);box-shadow:var(--clay-sm)}
 .ch h2{font-size:clamp(46px,7vw,104px);letter-spacing:-.02em;max-width:13ch}
@@ -257,11 +271,37 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
   </div>
 </section>
 
-<!-- 3: it holds on -->
+<!-- 3: habits and reminders -->
+<section class="ch ch--wine">
+  <div class="wrap">
+    <span class="num rise"><b>3</b>Two kinds</span>
+    <h2 class="rise" style="max-width:none">Habits repeat.<br>Reminders keep time.</h2>
+    <p class="lede rise">Habits nudge you while you work and count what you actually did. Reminders go off at a set day and time — once, or every weekday — and can keep chiming until you answer.</p>
+    <div class="two">
+      <div class="panel rise">
+        <h3>Habits</h3>
+        <p class="sub">By time at the keyboard. Today's count, no targets.</p>
+        <div class="row" data-habit="water"><span class="what">Drink some water<small>every 30m · <b class="c">5 done, 2 skipped</b></small></span><button class="tick ok">Done</button><button class="tick no">Later</button></div>
+        <div class="row" data-habit="stand"><span class="what">Stand up and stretch<small>every 45m · <b class="c">1 done, 0 skipped</b></small></span><button class="tick ok">Done</button><button class="tick no">Later</button></div>
+        <div class="row" data-habit="look"><span class="what">Look away for 20 seconds<small>every 20m · <b class="c">3 done, 1 skipped</b></small></span><button class="tick ok">Done</button><button class="tick no">Later</button></div>
+      </div>
+      <div class="panel rise">
+        <h3>Reminders</h3>
+        <p class="sub">By the clock. Pick a date and time — tap one to hear it.</p>
+        <div class="row"><button class="what" data-say="Standup in 5. Go.">Standup<small>Weekdays · 10:00 AM</small></button><span class="bell">repeats</span></div>
+        <div class="row"><button class="what" data-say="Call Mom. You promised.">Call Mom<small>Today · 6:00 PM</small></button></div>
+        <div class="row"><button class="what" data-say="Check in for your flight!">Flight check-in<small>Fri · 9:00 AM</small></button><span class="bell">keeps chiming</span></div>
+        <div class="row"><button class="what" data-say="Rent's due.">Pay rent<small>Every month · 1st, 10:00 AM</small></button><span class="bell">repeats</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4: it holds on -->
 <section class="ch ch--blue">
   <div class="wrap split">
     <div>
-      <span class="num rise"><b>3</b>Then it holds on</span>
+      <span class="num rise"><b>4</b>Then it holds on</span>
       <h2 class="rise">It drops down and stays put.</h2>
       <p class="lede rise">It swings to catch your eye and keeps the message up until you answer Done or Later. Or just tell it what you need — everything is heard on your Mac, never sent anywhere.</p>
       <div class="faces rise"><button class="btn btn--white" id="bSend">Send a reminder</button></div>
@@ -271,6 +311,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
       <div class="phrases">
         <button class="phrase" data-say="I'll say so at 4:00 PM">"Remind me to call Sam at four"</button>
         <button class="phrase" data-say="I'll say so in 20 minutes">"Remind me in 20 minutes to stretch"</button>
+        <button class="phrase" data-say="I'll say so in 10 minutes">"Set a reminder in 10 minutes"</button>
         <button class="phrase" data-say="Focusing for 25m">"Focus for 25 minutes"</button>
         <button class="phrase" data-say="Still open: buy milk; book flights">"What's left?"</button>
         <button class="phrase" data-say="Noted: buy milk">"Buy milk"</button>
@@ -283,7 +324,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
 <section class="ch ch--pink">
   <div class="wrap split">
     <div>
-      <span class="num rise"><b>4</b>And gets out of the way</span>
+      <span class="num rise"><b>5</b>And gets out of the way</span>
       <h2 class="rise">Type, and it's gone.</h2>
       <p class="lede rise">Start typing anywhere and it slips out of sight, then drops back when you stop. A focus session mutes the habits; reminders still arrive.</p>
     </div>
@@ -297,7 +338,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
 <!-- cast -->
 <section class="ch">
   <div class="wrap">
-    <span class="num rise"><b>5</b>The cast</span>
+    <span class="num rise"><b>6</b>The cast</span>
     <h2 class="rise">Pick who hangs about.</h2>
     <p class="lede rise">Some hang from a thread. Others stand on the floor. Click one and it takes over this page.</p>
     <div class="cast" id="cast">
@@ -337,7 +378,7 @@ const $=s=>document.querySelector(s);
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* marquee */
-const words=['Drink water','Stand up','Look away','Call Sam at four','Focus','Buy milk','Done','Later'];
+const words=['Drink water','Stand up','Standup · weekdays 10:00','Look away','Call Sam at four','Focus','5 done, 2 skipped','Buy milk'];
 $('#mq').innerHTML=[...words,...words].map(w=>`<span>${w}</span><span class="dot">✺</span>`).join('');
 
 /* reveals + progress */
@@ -411,7 +452,14 @@ function dismiss(){balloon.classList.remove('show');if(S.hangs)S.target=TUCK;}
 $('#bDone').onclick=()=>{clearTimeout(hideT);$('#bText').textContent='Nice.';setTimeout(dismiss,700);impulse(.8);};
 $('#bLater').onclick=()=>{clearTimeout(hideT);$('#bText').textContent='Fine. I\'ll be back.';setTimeout(dismiss,900);impulse(-.3);};
 $('#bPoke').onclick=()=>remind(); $('#bSend').onclick=()=>remind();
-document.querySelectorAll('.phrase').forEach(b=>b.onclick=()=>remind(b.dataset.say));
+document.querySelectorAll('.phrase, button.what').forEach(b=>b.onclick=()=>remind(b.dataset.say));
+/* habit counts: the buttons count, the way the app's Done and Later do */
+document.querySelectorAll('[data-habit]').forEach(r=>{
+  const c=r.querySelector('.c');let [d,k]=c.textContent.match(/\d+/g).map(Number);
+  const show=()=>c.textContent=`${d} done, ${k} skipped`;
+  r.querySelector('.ok').onclick=()=>{d++;show();};
+  r.querySelector('.no').onclick=()=>{k++;show();};
+});
 
 /* ---------- 1: toasts that leave before anyone looks ---------- */
 const bell='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>';
