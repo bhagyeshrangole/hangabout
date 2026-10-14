@@ -2,224 +2,180 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Hangabout — the reminder you cannot miss</title>
 <meta name="description" content="A companion that hangs from the top of your Mac screen, waits until you are actually at the keyboard, and holds your reminder until you deal with it. Free for macOS.">
 <meta property="og:title" content="Hangabout">
 <meta property="og:description" content="A companion that hangs from the top of your Mac screen and makes sure you actually see your reminders.">
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
 <style>
+/* Claymorphism, from ui-ux-pro-max: soft 3D, pastel, puffy. No hard lines —
+   every surface is one outer drop shadow plus two inner ones (a light rim
+   top-left, a dark one bottom-right), which is what makes it look inflated. */
 :root{
-  --night:#0E1424; --night-2:#161E36; --night-3:#223055;
-  --orange:#F97316; --amber:#FFC43D; --ink:#0B0F1C;
-  --text:#EEF2FF; --dim:#9AA6C9;
-  --glass:rgba(255,255,255,.055); --edge:rgba(255,255,255,.14);
-  --display:"Fredoka", ui-rounded, system-ui, sans-serif;
-  --body:"Nunito", ui-sans-serif, -apple-system, system-ui, sans-serif;
+  --ink:#2A1E3A; --text:#EEF2FF; --soft:#9AA6C9; --bg:#0E1424; --surf:#1E2846; --deep:#0A0F1D;
+  --ch1:#3A2340; --ch2:#123A36; --ch3:#1B3158; --ch4:#2C2356;
+  --orange:#FF8A4C; --peach:#FFD3BF; --butter:#FFEFA8; --sky:#BFDDFF; --lilac:#E3D5FF; --mint:#C4F2D8; --rose:#FFC9DC;
+  --clay:0 24px 44px -12px rgba(0,0,0,.65), inset 0 -10px 18px rgba(0,0,0,.35), inset 0 10px 16px rgba(255,255,255,.10);
+  --clay-sm:0 12px 22px -8px rgba(0,0,0,.6), inset 0 -6px 10px rgba(0,0,0,.3), inset 0 6px 10px rgba(255,255,255,.12);
+  --clay-pop:0 12px 22px -8px rgba(0,0,0,.6), inset 0 -6px 10px rgba(60,20,40,.18), inset 0 6px 10px rgba(255,255,255,.6);
+  --clay-in:inset 0 8px 14px rgba(0,0,0,.5), inset 0 -4px 10px rgba(255,255,255,.06);
+  --display:"Fredoka",system-ui,sans-serif; --body:"Nunito",system-ui,sans-serif;
+  --pop:cubic-bezier(.34,1.56,.64,1);
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{
-  margin:0;background:var(--night);color:var(--text);
-  font:17px/1.6 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden;
-}
-/* depth behind everything: two soft light pools, no flat field */
-body::before{
-  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:
-    radial-gradient(60vw 60vw at 78% 8%, rgba(249,115,22,.22), transparent 62%),
-    radial-gradient(52vw 52vw at 12% 92%, rgba(37,99,235,.16), transparent 64%);
-}
-h1,h2,h3,.display{font-family:var(--display);font-weight:700;line-height:1;letter-spacing:-.02em;margin:0}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);font-weight:700;font-size:18px;line-height:1.55;overflow-x:hidden}
+h1,h2,h3{font-family:var(--display);font-weight:700;line-height:1;margin:0}
 a{color:inherit}
-button,a{cursor:pointer}
-:focus-visible{outline:3px solid var(--amber);outline-offset:3px;border-radius:4px}
-.wrap{max-width:1200px;margin:0 auto;padding:0 28px;position:relative;z-index:2}
-.screen{min-height:100svh;display:flex;align-items:center;position:relative}
+button{font:inherit;cursor:pointer;color:inherit;border:0}
+:focus-visible{outline:4px solid #7C5CFF;outline-offset:4px}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
 
-/* ---------- companion layers ---------- */
-#rig{position:fixed;inset:0;width:100vw;height:100vh;z-index:3;pointer-events:none;overflow:visible}
-#rig .cord{stroke:#E6ECFF;stroke-width:2.6}
-#cSpider{transform-box:fill-box}
-/* it blinks on its own, the way the mark does */
-#cSpider .eye{transform-box:fill-box;transform-origin:50% 50%;animation:blink 5.4s ease-in-out infinite}
-@keyframes blink{0%,88%,100%{transform:scaleY(1)}91%,93%{transform:scaleY(.1)}96%{transform:scaleY(1)}}
-/* One face is showing at a time: happy swaps both the eyes and keeps the
-   smile, sad keeps the eyes open and only drops the mouth. */
-#cSpider .eyesHappy,#cSpider .mouthSad{display:none}
-#cSpider.happy .eye,#cSpider.happy .glint{display:none}
-#cSpider.happy .eyesHappy{display:block}
-#cSpider.sad .mouthNormal{display:none}
-#cSpider.sad .mouthSad{display:block}
+#prog{position:fixed;left:16px;right:16px;top:12px;height:12px;z-index:30;border-radius:99px;background:var(--deep);box-shadow:var(--clay-in)}
+#prog i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(180deg,#FFB083,var(--orange));box-shadow:inset 0 3px 4px rgba(255,255,255,.6)}
+
+/* buttons squash when pressed, like pushing a thumb into clay */
+.btn{display:inline-flex;align-items:center;gap:10px;padding:18px 30px;border-radius:24px;
+  background:linear-gradient(180deg,#FFA470,var(--orange));color:#3A1606;font-family:var(--display);font-weight:700;font-size:20px;
+  text-decoration:none;box-shadow:0 18px 30px -10px rgba(255,110,40,.6), inset 0 -8px 14px rgba(150,40,0,.22), inset 0 8px 12px rgba(255,255,255,.55);
+  transition:transform .2s var(--pop),box-shadow .2s ease-out}
+.btn:hover{transform:translateY(-3px) scale(1.03)}
+.btn:active{transform:scale(.94,.9);box-shadow:0 6px 12px -6px rgba(255,110,40,.6), inset 0 8px 14px rgba(150,40,0,.25)}
+.btn svg{width:22px;height:22px}
+.btn--blue{background:linear-gradient(180deg,#A9C8FF,#7FA8FF);color:#14254D;box-shadow:0 18px 30px -10px rgba(80,120,255,.55), inset 0 -8px 14px rgba(20,40,120,.2), inset 0 8px 12px rgba(255,255,255,.6)}
+.btn--white{background:var(--surf);color:var(--text);box-shadow:var(--clay)}
+
+.tag{display:inline-block;padding:9px 18px;border-radius:99px;background:var(--surf);font-size:14px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;box-shadow:var(--clay-sm)}
+
+/* companion */
+#rig{position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:20;overflow:visible}
+#cord{stroke:#B98A78;stroke-width:3;stroke-linecap:round}
 #grab{pointer-events:auto;cursor:grab;fill:transparent}
 #grab:active{cursor:grabbing}
-#balloon{
-  position:fixed;z-index:6;max-width:min(330px,72vw);
-  background:#FFFBF0;color:#0B0F1C;border-radius:18px;
-  box-shadow:0 26px 60px rgba(0,0,0,.55),0 2px 0 rgba(255,255,255,.6) inset;
-  padding:14px 18px 12px;font-family:var(--display);font-weight:600;font-size:16.5px;line-height:1.3;
-  opacity:0;transform:translate(-50%,14px) scale(.9);transform-origin:50% 100%;
-  transition:opacity .2s ease,transform .3s cubic-bezier(.2,1.5,.45,1);pointer-events:none;
-}
-#balloon.show{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto}
-#balloon.lift{transform:translate(-50%,calc(-100% - 14px)) scale(.9)}
-#balloon.lift.show{transform:translate(-50%,calc(-100% - 14px)) scale(1)}
-#balloon .answers{display:flex;gap:8px;margin-top:11px}
-#balloon .ans{flex:1;border:0;border-radius:11px;padding:8px 10px;cursor:pointer;
-  font-family:var(--display);font-weight:600;font-size:13.5px;letter-spacing:.01em;
-  background:#EFE7D6;color:#5C5444;transition:transform .12s ease,filter .12s ease}
-#balloon .ans--done{background:linear-gradient(180deg,var(--orange),#EA6A0C);color:#fff}
-#balloon .ans:hover{transform:translateY(-1px);filter:brightness(1.07)}
-#balloon .ans:active{transform:translateY(1px)}
-#balloon::after{content:"";position:absolute;left:50%;bottom:-8px;width:18px;height:18px;
-  background:#FFFBF0;transform:translateX(-50%) rotate(45deg);border-radius:0 0 4px 0}
-#chip{position:fixed;z-index:6;background:rgba(11,15,28,.82);color:#fff;
-  border:1px solid var(--edge);border-radius:14px;backdrop-filter:blur(12px);
-  padding:8px 14px 10px;font-family:var(--display);font-weight:600;font-size:15px;
-  font-variant-numeric:tabular-nums;box-shadow:0 18px 40px rgba(0,0,0,.5);
-  opacity:0;transform:translate(-50%,6px);transition:opacity .2s,transform .2s;pointer-events:none}
-#chip.show{opacity:1;transform:translate(-50%,0)}
-#chip .track{display:block;height:4px;margin-top:7px;border-radius:3px;background:rgba(255,255,255,.2)}
-#chip .track i{display:block;height:100%;border-radius:3px;background:var(--orange);width:0}
+#who{filter:drop-shadow(0 16px 14px rgba(0,0,0,.5))}
+#balloon{position:fixed;z-index:21;max-width:300px;padding:18px 20px 16px;background:#FFF7F0;color:var(--ink);border-radius:28px;box-shadow:var(--clay-pop),0 24px 44px -12px rgba(0,0,0,.6);
+  font-family:var(--display);font-size:20px;font-weight:600;line-height:1.2;
+  transform:translate(-50%,10px) scale(.6);opacity:0;pointer-events:none;transition:transform .35s var(--pop),opacity .2s}
+#balloon.show{transform:translate(-50%,0) scale(1);opacity:1;pointer-events:auto}
+.answers{display:flex;gap:10px;margin-top:12px}
+.ans{padding:9px 16px;border-radius:16px;background:var(--lilac);color:var(--ink);font-family:var(--body);font-weight:900;font-size:15px;box-shadow:var(--clay-sm);transition:transform .2s var(--pop)}
+.ans:active{transform:scale(.9)}
+.ans--done{background:var(--mint)}
 
-/* ---------- progress ---------- */
-#prog{position:fixed;inset:0 auto auto 0;height:3px;width:100%;z-index:20;background:transparent}
-#prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--orange),var(--amber))}
+/* hero with floating clay blobs */
+.hero{min-height:100vh;display:grid;align-items:center;padding:110px 0 60px;position:relative;overflow:hidden;
+  background:radial-gradient(circle at 80% 10%,rgba(249,115,22,.22),transparent 45%),radial-gradient(circle at 10% 90%,rgba(124,92,255,.22),transparent 45%),var(--bg)}
+.hero .wrap{position:relative;z-index:1}
+.blob{position:absolute;border-radius:50%;box-shadow:var(--clay-pop);opacity:.9;animation:float 7s ease-in-out infinite}
+.blob.a{width:200px;height:200px;right:-50px;top:62%;background:var(--sky)}
+.blob.b{width:90px;height:90px;left:48%;top:18%;background:var(--butter);animation-delay:-2s}
+.blob.c{width:130px;height:130px;left:-30px;bottom:8%;background:var(--rose);animation-delay:-4s}
+.blob.d{width:60px;height:60px;right:30%;bottom:30%;background:var(--mint);animation-delay:-1s;border-radius:22px;transform:rotate(18deg)}
+@keyframes float{50%{translate:0 -22px}}
+.hero h1{font-size:clamp(76px,14vw,210px);letter-spacing:-.03em;margin:24px 0 14px;color:#fff;
+  text-shadow:0 2px 0 #C9D0E8,0 4px 0 #AAB3D2,0 6px 0 #8C96BB,0 8px 0 #6F79A0,0 22px 30px rgba(0,0,0,.6)}
+.hero h1 .o{color:var(--orange);text-shadow:0 2px 0 #F27434,0 4px 0 #E3662A,0 6px 0 #D45920,0 8px 0 #C24D18,0 22px 30px rgba(0,0,0,.6)}
+.hero .lede{max-width:34ch;font-size:clamp(20px,2vw,26px);color:var(--soft)}
+.hero .lede mark{background:var(--butter);color:var(--ink);padding:0 .3em;border-radius:10px;box-shadow:var(--clay-pop)}
+.cta{display:flex;flex-wrap:wrap;gap:20px;margin-top:36px}
+.stamp{position:absolute;right:8%;bottom:-40px;width:150px;height:150px;border-radius:50%;
+  background:linear-gradient(160deg,#D9C8FF,#B79CFF);display:grid;place-items:center;text-align:center;font-family:var(--display);
+  font-size:18px;line-height:1.05;color:var(--ink);box-shadow:var(--clay-pop);animation:float 6s ease-in-out infinite}
+.stamp b{font-size:44px;display:block}
 
-/* ---------- shared UI: dimensional, not flat ---------- */
-.kicker{font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--orange);margin:0 0 18px}
-.lede{font-size:clamp(17px,1.6vw,20px);color:var(--dim);max-width:46ch;margin:20px 0 0;font-weight:600}
-.card{
-  position:relative;border-radius:22px;padding:26px 26px 24px;
-  background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.03));
-  border:1px solid var(--edge);
-  box-shadow:0 24px 50px rgba(0,0,0,.45), 0 1px 0 rgba(255,255,255,.16) inset;
-  backdrop-filter:blur(14px);
-  transform-style:preserve-3d;transition:transform .18s ease, box-shadow .18s ease;
-}
-.card:hover{box-shadow:0 34px 70px rgba(0,0,0,.55), 0 1px 0 rgba(255,255,255,.22) inset}
-.card h3{font-size:21px;margin-bottom:9px}
-.card p{margin:0;color:var(--dim);font-size:15.5px;font-weight:600}
-.ic{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;margin-bottom:16px;
-  background:linear-gradient(160deg,var(--orange),#C2410C);
-  box-shadow:0 10px 22px rgba(249,115,22,.4), 0 1px 0 rgba(255,255,255,.4) inset}
-.ic svg{width:23px;height:23px}
-.btn{
-  display:inline-flex;align-items:center;gap:10px;min-height:54px;padding:15px 28px;
-  border:0;border-radius:16px;font-family:var(--display);font-weight:600;font-size:18px;
-  background:linear-gradient(170deg,#FDA14B,var(--orange));color:#2A1403;text-decoration:none;
-  box-shadow:0 16px 34px rgba(249,115,22,.42), 0 1px 0 rgba(255,255,255,.5) inset;
-  transition:transform .16s cubic-bezier(.2,1.4,.5,1), box-shadow .16s;
-}
-.btn:hover{transform:translateY(-3px);box-shadow:0 24px 46px rgba(249,115,22,.5), 0 1px 0 rgba(255,255,255,.5) inset}
-.btn--ghost{background:var(--glass);color:var(--text);border:1px solid var(--edge);
-  box-shadow:0 14px 30px rgba(0,0,0,.4), 0 1px 0 rgba(255,255,255,.16) inset}
-.btn--ghost:hover{box-shadow:0 22px 44px rgba(0,0,0,.5), 0 1px 0 rgba(255,255,255,.2) inset}
-.btn svg{width:21px;height:21px}
-.rise{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.3,1),transform .7s cubic-bezier(.2,.7,.3,1)}
-.rise.in{opacity:1;transform:none}
+/* marquee: a squishy clay ribbon */
+.mq{background:var(--orange);color:#fff;overflow:hidden;white-space:nowrap;font-family:var(--display);font-size:clamp(28px,4vw,50px);
+  padding:16px 0;margin:0 18px;border-radius:40px;box-shadow:0 22px 40px -14px rgba(255,110,40,.6), inset 0 -10px 18px rgba(150,40,0,.22), inset 0 10px 16px rgba(255,255,255,.45);position:relative;z-index:2}
+.mq div{display:inline-block;animation:mq 26s linear infinite}
+.mq span{margin:0 26px}
+.mq .dot{color:var(--butter)}
+@keyframes mq{to{transform:translateX(-50%)}}
 
-/* ---------- 1. hero ---------- */
-.hero .wrap{width:100%}
-.pill{display:inline-flex;align-items:center;gap:9px;padding:9px 18px;border-radius:999px;
-  background:var(--glass);border:1px solid var(--edge);font-weight:800;font-size:12.5px;
-  letter-spacing:.12em;text-transform:uppercase;color:var(--dim);
-  box-shadow:0 10px 24px rgba(0,0,0,.35), 0 1px 0 rgba(255,255,255,.14) inset}
-.pill b{color:var(--amber)}
-h1{font-size:clamp(58px,9.2vw,138px);margin:24px 0 0;
-  text-shadow:0 24px 60px rgba(0,0,0,.6)}
-h1 .o{display:block;background:linear-gradient(170deg,#FFD089,var(--orange) 55%,#D14E09);
-  -webkit-background-clip:text;background-clip:text;color:transparent}
-.hero .lede{font-size:clamp(19px,2vw,25px);color:#C9D2F0;max-width:23ch;margin-top:26px}
-.hero .lede em{font-style:normal;color:var(--amber)}
-.cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:36px}
-.meta{font-weight:700;font-size:13px;letter-spacing:.07em;text-transform:uppercase;color:#7C88AB;margin:18px 0 0}
-.hero-right{position:absolute;right:28px;bottom:48px;max-width:230px;text-align:right;
-  font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#8E9ABE}
-@media (max-width:1000px){.hero-right{display:none}}
-.cue{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);color:#6E7AA0;
-  font-weight:800;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase}
-.cue span{display:block;width:1px;height:26px;margin:9px auto 0;
-  background:linear-gradient(var(--orange),transparent)}
+/* chapters sit in big rounded pastel pillows, not edge-to-edge bands */
+.ch{margin:40px 18px;padding:110px 0;border-radius:56px;position:relative;box-shadow:var(--clay)}
+.ch:not([class*="ch--"]){box-shadow:none}
+.ch h2{color:#fff}
+.ch--orange{background:linear-gradient(160deg,#4A2A48,var(--ch1))}
+.ch--yellow{background:linear-gradient(160deg,#1C5A50,var(--ch2))}
+.ch--blue{background:linear-gradient(160deg,#22406E,var(--ch3))}
+.ch--pink{background:linear-gradient(160deg,#3A2E6E,var(--ch4))}
+.num{font-family:var(--display);font-size:20px;display:inline-flex;align-items:center;gap:12px;margin-bottom:22px}
+.num b{display:grid;place-items:center;width:50px;height:50px;border-radius:18px;background:var(--surf);color:var(--orange);box-shadow:var(--clay-sm)}
+.ch h2{font-size:clamp(46px,7vw,104px);letter-spacing:-.02em;max-width:13ch}
+.ch .lede{max-width:44ch;font-size:clamp(18px,1.7vw,22px);margin:24px 0 0;color:var(--soft)}
+.split{display:grid;grid-template-columns:1.05fr 1fr;gap:56px;align-items:center}
+@media (max-width:900px){.split{grid-template-columns:1fr}.ch{margin:24px 10px;border-radius:36px;padding:70px 0}}
 
-/* ---------- marquee ---------- */
-.mq{position:relative;z-index:2;overflow:hidden;padding:13px 0;
-  background:linear-gradient(90deg,rgba(249,115,22,.16),rgba(255,196,61,.14));
-  border-top:1px solid var(--edge);border-bottom:1px solid var(--edge)}
-.mq div{display:flex;gap:30px;white-space:nowrap;font-family:var(--display);font-weight:600;
-  font-size:19px;color:#FFD9A8;animation:slide 30s linear infinite}
-.mq span{display:inline-flex;gap:30px;align-items:center}
-.mq svg{width:12px;height:12px;opacity:.7}
-@keyframes slide{to{transform:translateX(-50%)}}
+.panel{background:var(--surf);border-radius:40px;box-shadow:var(--clay);padding:30px}
 
-/* ---------- 2. what it does ---------- */
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:46px}
-@media (max-width:980px){.grid{grid-template-columns:1fr}}
-.race{display:grid;gap:12px;margin:18px 0 0}
-.lane{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:center}
-.lane b{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
-.bar{height:12px;border-radius:7px;background:rgba(255,255,255,.1);overflow:hidden;
-  box-shadow:0 1px 0 rgba(255,255,255,.12) inset}
-.bar i{display:block;height:100%;width:0;border-radius:7px;background:#34D399;transition:width .18s linear}
-.lane.them .bar i{background:#FB7185}
-.state{font-size:13px;font-weight:700;color:var(--dim);margin:12px 0 0;min-height:1.4em;font-variant-numeric:tabular-nums}
-.state b{color:var(--amber)}
-.mini{margin-top:18px;font-size:14px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
-  color:var(--orange);background:none;border:0;padding:0}
-.mini:hover{color:var(--amber)}
-.typebox{width:100%;font:inherit;font-weight:700;font-size:16px;padding:14px 16px;margin-top:16px;
-  border-radius:14px;border:1px solid var(--edge);background:rgba(0,0,0,.25);color:var(--text)}
+.stack{position:relative;height:360px}
+.toast{position:absolute;left:0;right:0;display:flex;gap:14px;align-items:center;padding:16px 18px;background:var(--surf);
+  border-radius:26px;box-shadow:var(--clay-sm);font-size:16px;transition:transform .55s var(--pop),opacity .4s}
+.toast i{flex:none;width:44px;height:44px;border-radius:16px;background:var(--peach);color:var(--ink);display:grid;place-items:center;font-style:normal;box-shadow:var(--clay-pop)}
+.toast i svg{width:22px;height:22px}
+.toast small{display:block;font-weight:800;opacity:.55;font-size:13px}
+.missed{margin-top:26px;display:flex;align-items:center;gap:16px;font-family:var(--display)}
+.missed b{display:grid;place-items:center;min-width:120px;height:120px;padding:0 20px;border-radius:40px;background:var(--surf);box-shadow:var(--clay);font-size:64px;color:var(--orange)}
+
+.clock{font-family:var(--display);font-size:clamp(72px,10vw,130px);line-height:1;font-variant-numeric:tabular-nums}
+.lanes{display:grid;gap:16px;margin:22px 0}
+.lane{display:grid;grid-template-columns:110px 1fr;gap:14px;align-items:center;font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:var(--soft)}
+.bar{height:28px;border-radius:99px;background:var(--deep);box-shadow:var(--clay-in);overflow:hidden;padding:4px}
+.bar i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(180deg,#A6F0C6,#5FD392);box-shadow:inset 0 3px 4px rgba(255,255,255,.7)}
+.lane.them .bar i{background:linear-gradient(180deg,#FFC0D6,#FF8FB4)}
+.state{min-height:1.6em;font-weight:900}
+.state .on{color:#4ADE80} .state .off{color:#FB7185}
+.pad{margin-top:18px;border-radius:28px;padding:26px;text-align:center;background:var(--deep);box-shadow:var(--clay-in);
+  font-family:var(--display);font-size:20px;user-select:none;touch-action:none;transition:background .2s}
+.pad.live{background:var(--mint);color:var(--ink)}
+
+.faces{display:flex;gap:18px;flex-wrap:wrap;margin-top:30px}
+.phrases{display:flex;flex-wrap:wrap;gap:14px;margin-top:20px}
+.phrase{padding:12px 18px;border-radius:99px;background:var(--bg);font-weight:900;font-size:15px;color:var(--ink);box-shadow:var(--clay-pop);transition:transform .2s var(--pop),background .2s}
+.phrase:nth-child(3n+1){background:var(--sky)} .phrase:nth-child(3n+2){background:var(--butter)} .phrase:nth-child(3n){background:var(--rose)}
+.phrase:hover{transform:translateY(-3px) rotate(-2deg)}
+.phrase:active{transform:scale(.9)}
+.mic{display:flex;align-items:center;gap:14px}
+.mic kbd{font-family:var(--display);font-size:22px;padding:8px 14px;border-radius:16px;background:var(--lilac);color:var(--ink);box-shadow:var(--clay-pop)}
+
+.typebox{width:100%;font:inherit;font-size:20px;padding:20px 22px;border:0;border-radius:24px;background:var(--deep);color:var(--text);box-shadow:var(--clay-in)}
+.typebox:focus{outline:none;box-shadow:var(--clay-in),0 0 0 3px var(--orange)}
 .typebox::placeholder{color:#6E7AA0}
-.typebox:focus{outline:none;border-color:var(--orange)}
+.timer{display:flex;align-items:center;gap:18px;margin-top:22px}
+.timer b{font-family:var(--display);font-size:56px;font-variant-numeric:tabular-nums}
 
-/* ---------- 3. cast + get ---------- */
-.cast{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}
-@media (max-width:980px){.cast{grid-template-columns:1fr 1fr}}
-@media (max-width:620px){.cast{grid-template-columns:1fr}}
-.who{text-align:left;font:inherit;color:inherit;width:100%}
-.who h3{font-size:19px;margin-bottom:6px}
-.who p{font-size:14.5px}
-.who .tag{display:inline-block;margin-top:12px;font-size:11px;font-weight:800;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--amber)}
-.who[aria-pressed=true]{border-color:var(--orange);
-  box-shadow:0 26px 54px rgba(249,115,22,.3), 0 0 0 1px var(--orange) inset}
-/* A card that says "asleep in a corner" with nothing to look at is a worse
-   advert than one you can see. The portrait sits on its own ground so six
-   drawings of different proportions still line up. */
-.who{display:flex;flex-direction:column}
-.who .shot{display:grid;place-items:center;height:176px;margin:-8px -8px 14px;
-  border-radius:16px;background:radial-gradient(60% 70% at 50% 42%,rgba(255,255,255,.1),rgba(255,255,255,.015));
-  overflow:hidden}
-/* Capped on both axes: the full-body figures are tall and thin and the drawn
-   animals are wide, so height alone sizes one group and starves the other. */
-.who .shot img{max-height:158px;max-width:88%;width:auto;height:auto;
-  filter:drop-shadow(0 12px 22px rgba(0,0,0,.55));
-  transition:transform .35s cubic-bezier(.2,1.4,.4,1)}
-.who:hover .shot img{transform:translateY(-6px) scale(1.05)}
-.who p{flex:1}
-.who .getit{display:inline-flex;align-items:center;gap:7px;align-self:flex-start;margin-top:14px;
-  padding:8px 13px;border-radius:11px;text-decoration:none;
-  font-family:var(--display);font-weight:600;font-size:13px;
-  background:rgba(249,115,22,.14);color:var(--amber);border:1px solid rgba(249,115,22,.4);
-  transition:background .15s ease,transform .15s ease}
-.who .getit:hover{background:var(--orange);color:#fff;transform:translateY(-1px)}
-.get{display:grid;grid-template-columns:1.1fr 1fr;gap:28px;align-items:center;margin-top:52px}
-@media (max-width:900px){.get{grid-template-columns:1fr}}
-.steps{list-style:none;margin:0;padding:0;display:grid;gap:10px}
-.steps li{display:flex;gap:14px;align-items:flex-start;font-weight:700;font-size:15.5px;color:var(--dim)}
-.steps li strong{color:var(--text)}
-.steps li b{flex:0 0 auto;width:30px;height:30px;border-radius:10px;display:grid;place-items:center;
-  background:var(--glass);border:1px solid var(--edge);color:var(--amber);font-family:var(--display);font-size:15px}
-footer{position:relative;z-index:2;padding:34px 0 48px;text-align:center;color:#6E7AA0;font-size:14px;font-weight:700}
-footer a{color:var(--orange)}
+.cast{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;margin-top:50px}
+@media (max-width:980px){.cast{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:520px){.cast{grid-template-columns:1fr}}
+.who{background:var(--surf);border-radius:36px;box-shadow:var(--clay);padding:16px;text-align:left;display:flex;flex-direction:column;
+  transition:transform .3s var(--pop)}
+.who:hover{transform:translateY(-8px) rotate(-1.5deg)}
+.who:active{transform:scale(.96)}
+.who[aria-pressed="true"]{box-shadow:var(--clay),0 0 0 4px var(--orange)}
+.who .shot{display:grid;place-items:center;aspect-ratio:1;border-radius:28px;background:var(--peach);margin-bottom:14px;box-shadow:var(--clay-in)}
+.who:nth-child(4n+2) .shot{background:var(--sky)} .who:nth-child(4n+3) .shot{background:var(--rose)} .who:nth-child(4n) .shot{background:var(--mint)}
+.who img{width:82%;height:82%;object-fit:contain;filter:drop-shadow(0 12px 10px rgba(60,20,40,.3));transition:transform .3s var(--pop)}
+.who:hover img{transform:scale(1.08) rotate(3deg)}
+.who h3{font-size:26px;margin:0 6px 6px}
+.who p{margin:0 6px 6px;font-size:15px;font-weight:700;line-height:1.4;color:var(--soft)}
 
+.get h2{font-size:clamp(58px,10vw,150px);max-width:none}
+.steps{list-style:none;padding:0;margin:40px 0 0;display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+@media (max-width:900px){.steps{grid-template-columns:1fr}}
+.steps li{background:var(--surf);border-radius:34px;box-shadow:var(--clay);padding:26px;font-size:17px}
+.steps li b{display:grid;place-items:center;width:56px;height:56px;border-radius:20px;background:linear-gradient(180deg,#FFA470,var(--orange));color:#fff;
+  font-family:var(--display);font-size:26px;margin-bottom:14px;box-shadow:var(--clay-sm)}
+footer{margin:0 18px 18px;padding:34px 0;font-size:15px;background:var(--surf);border-radius:40px;box-shadow:var(--clay)}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+.rise{opacity:0;transform:translateY(40px) scale(.94);transition:opacity .6s,transform .8s var(--pop)}
+.rise.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto}
-  .mq div{animation:none}
+  *{transition:none!important;animation:none!important}
   .rise{opacity:1;transform:none}
 }
 </style>
@@ -228,404 +184,284 @@ footer a{color:var(--orange)}
 
 <div id="prog"><i></i></div>
 
+<!-- The companion on a real cord. The spider is a picture so any member of
+     the cast can take its place without the physics knowing. -->
 <svg id="rig" aria-hidden="true" focusable="false">
-  <defs>
-    <radialGradient id="body" cx="38%" cy="28%" r="78%">
-      <stop offset="0" stop-color="#F97316"/><stop offset="1" stop-color="#C2410C"/>
-    </radialGradient>
-  </defs>
   <g id="pivot">
-    <line class="cord" id="cord" x1="0" y1="0" x2="0" y2="90"/>
-    <g id="holder">
-      <!-- Every other companion is a picture rather than a drawing. It shares
-           the holder with the mark so the cord, the balloon and the drag
-           handle all keep working without knowing which one is on screen. -->
-      <image id="cPhoto" href="" width="230" height="200" x="-115" y="-12"
-             preserveAspectRatio="xMidYMid meet" style="display:none"/>
-      <g id="cSpider" class="mark">
-        <!-- The app's mark, same geometry as Mark.swift: 126x146 design space,
-             body at (63,68) r30, eight legs at four reaches. -->
-        <g transform="scale(1.25) translate(-63 -38)">
-          <g class="legs"><path d="M48.0 57.0 Q31.0 41.0 23.0 57.0" fill="none" stroke="#C2410C" stroke-width="7.5" stroke-linecap="round"/>
-            <path d="M48.0 64.0 Q29.4 57.0 21.0 77.0" fill="none" stroke="#C2410C" stroke-width="7.5" stroke-linecap="round"/>
-            <path d="M48.0 71.0 Q27.8 73.0 19.0 97.0" fill="none" stroke="#C2410C" stroke-width="7.5" stroke-linecap="round"/>
-            <path d="M48.0 78.0 Q26.2 89.0 17.0 117.0" fill="none" stroke="#C2410C" stroke-width="7.5" stroke-linecap="round"/>
-            <path d="M78.0 57.0 Q95.0 41.0 103.0 57.0" fill="none" stroke="#C2410C" stroke-width="7.5" stroke-linecap="round"/>
-            <path d="M78.0 64.0 Q96.6 57.0 105.0 77.0" fill="none" stroke="#C2410C" stroke-width="7.5" stroke-linecap="round"/>
-            <path d="M78.0 71.0 Q98.2 73.0 107.0 97.0" fill="none" stroke="#C2410C" stroke-width="7.5" stroke-linecap="round"/>
-            <path d="M78.0 78.0 Q99.8 89.0 109.0 117.0" fill="none" stroke="#C2410C" stroke-width="7.5" stroke-linecap="round"/></g>
-          <circle cx="63" cy="68" r="30" fill="url(#body)"/>
-          <ellipse cx="44" cy="77" rx="6.5" ry="4.4" fill="#FF9D5C" opacity=".55"/>
-          <ellipse cx="82" cy="77" rx="6.5" ry="4.4" fill="#FF9D5C" opacity=".55"/>
-          <ellipse class="eye" cx="51" cy="64" rx="8.5" ry="9.6" fill="#10152A"/>
-          <ellipse class="eye" cx="75" cy="64" rx="8.5" ry="9.6" fill="#10152A"/>
-          <circle class="glint" cx="48.4" cy="60.6" r="3.1" fill="#fff"/>
-          <circle class="glint" cx="53.8" cy="67" r="1.5" fill="#fff" opacity=".75"/>
-          <circle class="glint" cx="72.4" cy="60.6" r="3.1" fill="#fff"/>
-          <circle class="glint" cx="77.8" cy="67" r="1.5" fill="#fff" opacity=".75"/>
-          <!-- Done wears these instead of the open eyes. Squashing the open
-               eye read as a blink caught mid-frame, so happy is a different
-               shape entirely — the same two arcs Mark.swift strokes. -->
-          <g class="eyesHappy">
-            <path d="M42.5 67 Q51 55 59.5 67" fill="none" stroke="#10152A" stroke-width="5.4" stroke-linecap="round"/>
-            <path d="M66.5 67 Q75 55 83.5 67" fill="none" stroke="#10152A" stroke-width="5.4" stroke-linecap="round"/>
-          </g>
-          <path class="mouth mouthNormal" d="M55 81 Q63 89 71 81" fill="none" stroke="#10152A" stroke-width="4" stroke-linecap="round"/>
-          <!-- Set lower as well as turned down, so the whole face droops
-               rather than just the line. -->
-          <path class="mouth mouthSad" d="M55.5 87 Q63 79 70.5 87" fill="none" stroke="#10152A" stroke-width="4" stroke-linecap="round"/>
-        </g>
-      </g>
-    </g>
+    <line id="cord" x1="0" y1="0" x2="0" y2="90"/>
+    <g id="holder"><image id="who" href="img/spider.png" width="150" height="150" x="-75" y="-18"/></g>
   </g>
-  <circle id="grab" r="58"/>
+  <circle id="grab" r="60"/>
 </svg>
-<div id="balloon" role="status"><span id="bText">Time to drink some water</span><span class="answers"><button class="ans ans--done" id="bDone">Done</button><button class="ans" id="bLater">Later</button></span></div>
-<div id="chip" aria-hidden="true">25:00<span class="track"><i id="chipFill"></i></span></div>
+<div id="balloon" role="status"><span id="bText">Time to drink some water</span>
+  <span class="answers"><button class="ans ans--done" id="bDone">Done</button><button class="ans" id="bLater">Later</button></span></div>
 
-<!-- ======== 1 ======== -->
-<header class="screen hero" data-sec="0">
+<header class="hero">
+  <span class="blob a" aria-hidden="true"></span><span class="blob b" aria-hidden="true"></span><span class="blob c" aria-hidden="true"></span><span class="blob d" aria-hidden="true"></span>
   <div class="wrap">
-    <span class="pill rise">Free <b>•</b> macOS <b>•</b> Apple&nbsp;Silicon</span>
+    <span class="tag rise">Free · macOS · Apple Silicon</span>
     <h1 class="rise">Hang<span class="o">about</span></h1>
-    <p class="lede rise">A companion on a thread at the top of your screen. It waits until you are <em>actually there</em>, then refuses to be missed.</p>
+    <p class="lede rise">A companion on a thread at the top of your screen. It waits until you are <mark>actually there</mark>, then refuses to be missed.</p>
     <div class="cta rise">
       <a class="btn" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 21h16"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 21h16"/></svg>
         Download for Mac</a>
-      <button class="btn btn--ghost" id="bRemind">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
-        Poke it</button>
+      <button class="btn btn--white" id="bPoke">Poke it</button>
     </div>
-    <p class="meta rise">macOS 14 Sonoma or later · 8 MB · no account, no Dock icon</p>
+    <div class="stamp rise" aria-hidden="true"><span><b>8</b>companions</span></div>
   </div>
-  <p class="hero-right">Drag it anywhere — it stays. Let go and watch it climb back.</p>
-  <p class="cue">Scroll<span></span></p>
 </header>
 
-<div class="mq" aria-hidden="true"><div><span id="mq"></span><span id="mq2"></span></div></div>
+<div class="mq" aria-hidden="true"><div id="mq"></div></div>
 
-<!-- ======== 2 ======== -->
-<section class="screen" data-sec="1">
-  <div class="wrap">
-    <p class="kicker rise">What it actually does</p>
-    <h2 class="rise" style="font-size:clamp(34px,5.2vw,68px)">Fun to keep around.<br>Hard to ignore.</h2>
-    <p class="lede rise">Everything below is live — the companion on this page is the real thing.</p>
+<!-- 1: the problem -->
+<section class="ch ch--orange">
+  <div class="wrap split">
+    <div>
+      <span class="num rise"><b>1</b>The problem</span>
+      <h2 class="rise">You never see the reminder.</h2>
+      <p class="lede rise">A notification slides in while you are mid-sentence, waits five seconds, and leaves. You were not looking. Neither was anyone.</p>
+      <div class="missed rise"><b id="missed">0</b><span>reminders missed<br>while you read this</span></div>
+    </div>
+    <div class="stack rise" id="stack" aria-hidden="true"></div>
+  </div>
+</section>
 
-    <div class="grid">
-      <div class="card rise" data-tilt>
-        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#2A1403" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
-        <h3>It waits for you</h3>
-        <p>Repeating reminders bank <em>working</em> seconds. Step away and the clock pauses instead of resetting.</p>
-        <div class="race">
-          <div class="lane"><b>Hangabout</b><div class="bar"><i id="barOurs"></i></div></div>
-          <div class="lane them"><b>Ordinary</b><div class="bar"><i id="barThem"></i></div></div>
-        </div>
-        <p class="state" id="raceState">Press below and walk away.</p>
-        <button class="mini" id="bAway">Step away from the desk →</button>
+<!-- 2: it waits -->
+<section class="ch ch--yellow">
+  <div class="wrap split">
+    <div>
+      <span class="num rise"><b>2</b>It waits for you</span>
+      <h2 class="rise">The clock only runs while you're there.</h2>
+      <p class="lede rise">Habits like "drink water" count <strong>working</strong> seconds. Step away and the clock pauses instead of firing at an empty chair.</p>
+    </div>
+    <div class="panel rise">
+      <div class="clock" id="clock">0:00</div>
+      <div class="lanes">
+        <div class="lane"><span>Hangabout</span><div class="bar"><i id="barOurs"></i></div></div>
+        <div class="lane them"><span>Ordinary</span><div class="bar"><i id="barThem"></i></div></div>
       </div>
+      <p class="state" id="state">Move your mouse over the pad to "work".</p>
+      <div class="pad" id="pad">Wiggle here to work · stop to step away</div>
+    </div>
+  </div>
+</section>
 
-      <div class="card rise" data-tilt>
-        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#2A1403" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
-        <h3>Then it holds on</h3>
-        <p>It comes down the screen, swings to catch your eye, and keeps the message up until you deal with it. Answer it with Done or Later — it pulls a face either way.</p>
-        <button class="mini" id="bRemind2">Send a reminder now →</button>
-      </div>
-
-      <div class="card rise" data-tilt>
-        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#2A1403" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 1-9 9"/><path d="M12 3v9l6 3"/></svg></span>
-        <h3>And gets out of the way</h3>
-        <p>A focus session pins a countdown above it and never moves it. Type anywhere and it vanishes, then comes back when you stop.</p>
-        <input class="typebox" id="typebox" placeholder="Type here — watch it hide…">
-        <button class="mini" id="bFocus">Start a 25-minute session →</button>
+<!-- 3: it holds on -->
+<section class="ch ch--blue">
+  <div class="wrap split">
+    <div>
+      <span class="num rise"><b>3</b>Then it holds on</span>
+      <h2 class="rise">It drops down and stays put.</h2>
+      <p class="lede rise">It swings to catch your eye and keeps the message up until you answer Done or Later. Or just tell it what you need — everything is heard on your Mac, never sent anywhere.</p>
+      <div class="faces rise"><button class="btn btn--white" id="bSend">Send a reminder</button></div>
+    </div>
+    <div class="panel rise">
+      <div class="mic"><kbd>⌃⌥⌘N</kbd><span>hold and say…</span></div>
+      <div class="phrases">
+        <button class="phrase" data-say="I'll say so at 4:00 PM">"Remind me to call Sam at four"</button>
+        <button class="phrase" data-say="I'll say so in 20 minutes">"Remind me in 20 minutes to stretch"</button>
+        <button class="phrase" data-say="Focusing for 25m">"Focus for 25 minutes"</button>
+        <button class="phrase" data-say="Still open: buy milk; book flights">"What's left?"</button>
+        <button class="phrase" data-say="Noted: buy milk">"Buy milk"</button>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ======== 3 ======== -->
-<section class="screen" data-sec="2">
-  <div class="wrap">
-    <p class="kicker rise">The cast</p>
-    <h2 class="rise" style="font-size:clamp(34px,5.2vw,68px)">Eight of them.<br>Pick your favourite.</h2>
-    <p class="lede rise">Some hang from a thread at the top of the screen. Others stand on the floor and walk over when they have something to say.</p>
-
-    <div class="cast">
-      <div class="card who rise" data-tilt data-char="spider" aria-pressed="true">
-        <span class="shot"><img src="img/spider.png" alt="The spider companion" loading="lazy" width="320" height="320"></span>
-        <h3>Spider</h3><p>The app's own mark and the one you get out of the box. Hangs from a thread and blinks at you; drag it down and the silk stretches. It is the menu bar icon too.</p>
-        <span class="tag">The default · give it a flick</span>
-        <a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a>
-      </div>
-      <div class="card who rise" data-tilt data-char="ironbot" aria-pressed="false"><span class="shot"><img src="img/ironbot.png" alt="Ironbot, red and gold, standing" loading="lazy" width="320" height="320"></span><h3>Ironbot</h3><p>The app's own hero, drawn for it rather than borrowed. Stands on the floor, lights the thrusters when it has somewhere to be, and fires a beam from each palm. Double-click and it does both.</p><span class="tag">Original &middot; fires from both palms</span><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
-      <div class="card who rise" data-tilt data-char="spiderMan" aria-pressed="false"><span class="shot"><img src="img/spiderMan.png" alt="Spider-Man hanging from a web" loading="lazy" width="320" height="320"></span><h3>Spider-Man</h3><p>The original, on the same thread and with the same moves. The mark took over as the default; it did not replace him.</p><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
-      <div class="card who rise" data-tilt data-char="ironMan" aria-pressed="false"><span class="shot"><img src="img/ironMan.png" alt="Iron Man in flight" loading="lazy" width="320" height="320"></span><h3>Iron Man &amp; Tony</h3><p>One lights the thrusters only when he is going somewhere. The other suits up when there is something to do.</p><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
-      <div class="card who rise" data-tilt data-char="cap" aria-pressed="false"><span class="shot"><img src="img/cap.png" alt="Captain America standing at ease" loading="lazy" width="320" height="320"></span><h3>Captain America</h3><p>Stands at ease and throws the shield. It glances off two screen edges and comes home when the balloon does.</p><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
-      <div class="card who rise" data-tilt data-char="cat" aria-pressed="false"><span class="shot"><img src="img/cat.png" alt="The drawn cat, ears up" loading="lazy" width="320" height="320"></span><h3>Cat</h3><p>Asleep in a corner until there is news, then gets up and walks over. Drawn in code.</p><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
-      <div class="card who rise" data-tilt data-char="dog" aria-pressed="false"><span class="shot"><img src="img/dog.png" alt="The drawn dog, ears up" loading="lazy" width="320" height="320"></span><h3>Dog</h3><p>The same, with floppy ears and a tail that gives the game away.</p><a class="getit" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">Download to use it <span aria-hidden="true">&rarr;</span></a></div>
+<!-- 4: gets out of the way -->
+<section class="ch ch--pink">
+  <div class="wrap split">
+    <div>
+      <span class="num rise"><b>4</b>And gets out of the way</span>
+      <h2 class="rise">Type, and it's gone.</h2>
+      <p class="lede rise">Start typing anywhere and it slips out of sight, then drops back when you stop. A focus session mutes the habits; reminders still arrive.</p>
     </div>
-
-    <div class="get" id="install">
-      <div class="rise">
-        <h3 style="font-size:clamp(24px,3vw,38px);margin-bottom:16px">Three steps and one odd warning.</h3>
-        <ol class="steps">
-          <li><b>1</b><span>Download the zip and unzip it.</span></li>
-          <li><b>2</b><span>Drag Hangabout.app into Applications.</span></li>
-          <li><b>3</b><span>First launch, macOS will refuse — open <strong>System Settings → Privacy &amp; Security</strong> and hit <strong>Open Anyway</strong>. Once only.</span></li>
-        </ol>
-        <p class="meta" style="margin-top:18px">Once only really does mean once. After this your companion asks when there is a new version, and <strong>Update</strong> does the rest — no download, no drag, no warning. Settings and reminders carry across.</p>
-      </div>
-      <div class="card rise" style="text-align:center">
-        <p style="color:var(--text);font-family:var(--display);font-size:20px;margin-bottom:18px">Free, and it leaves nothing behind.</p>
-        <a class="btn" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 21h16"/></svg>
-          Download for Mac</a>
-        <p class="meta" style="text-align:center">Apple Silicon · macOS 14+</p>
-      </div>
+    <div class="panel rise">
+      <input class="typebox" id="typebox" placeholder="Type here — watch it hide…" aria-label="Type to watch the companion hide">
+      <div class="timer"><b id="tLeft">25:00</b><button class="btn btn--blue" id="bFocus">Focus</button></div>
     </div>
   </div>
 </section>
 
-<footer>Made by <a href="https://github.com/bhagyeshrangole">Bhagyesh Rangole</a> · <a href="https://github.com/bhagyeshrangole/hangabout/releases">All versions</a></footer>
+<!-- cast -->
+<section class="ch">
+  <div class="wrap">
+    <span class="num rise"><b>5</b>The cast</span>
+    <h2 class="rise">Pick who hangs about.</h2>
+    <p class="lede rise">Some hang from a thread. Others stand on the floor. Click one and it takes over this page.</p>
+    <div class="cast" id="cast">
+      <button class="who rise" data-char="spider" data-img="img/spider.png" aria-pressed="true"><span class="shot"><img src="img/spider.png" alt="" width="320" height="320"></span><h3>Spider</h3><p>The default and the menu bar icon. Drag it down and the silk stretches.</p></button>
+      <button class="who rise" data-char="ironbot" data-img="img/ironbot.png" aria-pressed="false"><span class="shot"><img src="img/ironbot.png" alt="" loading="lazy" width="320" height="320"></span><h3>Ironbot</h3><p>Drawn for the app. Lights the thrusters and fires from both palms.</p></button>
+      <button class="who rise" data-char="spiderMan" data-img="img/spiderMan.png" aria-pressed="false"><span class="shot"><img src="img/spiderMan.png" alt="" loading="lazy" width="320" height="320"></span><h3>Spider-Man</h3><p>The original, on the same thread with the same moves.</p></button>
+      <button class="who rise" data-char="ironMan" data-img="img/ironMan.png" aria-pressed="false"><span class="shot"><img src="img/ironMan.png" alt="" loading="lazy" width="320" height="320"></span><h3>Iron Man &amp; Tony</h3><p>One flies in, the other suits up when there is something to do.</p></button>
+      <button class="who rise" data-char="cap" data-img="img/cap.png" aria-pressed="false"><span class="shot"><img src="img/cap.png" alt="" loading="lazy" width="320" height="320"></span><h3>Captain America</h3><p>Throws the shield. It glances off two screen edges and comes home.</p></button>
+      <button class="who rise" data-char="cat" data-img="img/cat.png" aria-pressed="false"><span class="shot"><img src="img/cat.png" alt="" loading="lazy" width="320" height="320"></span><h3>Cat</h3><p>Asleep in a corner until there is news, then walks over.</p></button>
+      <button class="who rise" data-char="dog" data-img="img/dog.png" aria-pressed="false"><span class="shot"><img src="img/dog.png" alt="" loading="lazy" width="320" height="320"></span><h3>Dog</h3><p>Floppy ears and a tail that gives the game away.</p></button>
+    </div>
+  </div>
+</section>
+
+<!-- get it -->
+<section class="ch ch--orange get" id="install">
+  <div class="wrap">
+    <h2 class="rise">Get it.<br>It's free.</h2>
+    <ol class="steps">
+      <li class="rise"><b>1</b>Download the zip and unzip it.</li>
+      <li class="rise"><b>2</b>Drag Hangabout.app into Applications.</li>
+      <li class="rise"><b>3</b>First launch, macOS refuses. <strong>System Settings → Privacy &amp; Security → Open Anyway</strong>. Once only.</li>
+    </ol>
+    <div class="cta rise" style="margin-top:44px">
+      <a class="btn btn--white" href="https://github.com/bhagyeshrangole/hangabout/releases/latest/download/Hangabout.zip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 21h16"/></svg>
+        Download for Mac</a>
+    </div>
+    <p class="rise" style="margin-top:22px;max-width:52ch">After that it updates itself — no download, no drag, no warning. Needs an Apple Silicon Mac on macOS 14 or later.</p>
+  </div>
+</section>
+
+<footer><div class="wrap"><span>Hangabout</span><a href="https://github.com/bhagyeshrangole/hangabout/releases/latest">All releases →</a></div></footer>
 
 <script>
-(() => {
-const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const $ = s => document.querySelector(s);
-const rig=$('#rig'), pivot=$('#pivot'), cord=$('#cord'), holder=$('#holder'), grab=$('#grab');
-const balloon=$('#balloon'), chip=$('#chip'), chipFill=$('#chipFill');
+const $=s=>document.querySelector(s);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const STAR='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.6 6.8L21.5 11l-6.9 2.2L12 20l-2.6-6.8L2.5 11l6.9-2.2z"/></svg>';
-const WORDS=['DRINK SOME WATER','STAND UP','LOOK AWAY FOR 20 SECONDS','BREAK TIME','STRETCH','BLINK'];
-const strip=WORDS.concat(WORDS).map(w=>`<span>${w}</span>${STAR}`).join('');
-$('#mq').innerHTML=strip; $('#mq2').innerHTML=strip;
+/* marquee */
+const words=['Drink water','Stand up','Look away','Call Sam at four','Focus','Buy milk','Done','Later'];
+$('#mq').innerHTML=[...words,...words].map(w=>`<span>${w}</span><span class="dot">✺</span>`).join('');
 
-const TUCK=92, DOWN=340;
-const S={angle:0,vel:0,cord:TUCK,target:TUCK,pinX:0,pinTarget:0,kind:'spider',hangs:true,
-         W:0,H:0,sec:0,placed:false,phase:0,pulling:false};
-window.__hang=S;
-let W=0,H=0;
-function size(){
-  W=innerWidth;H=innerHeight;S.W=W;S.H=H;
-  rig.setAttribute('viewBox',`0 0 ${W} ${H}`);
-  if(!S.pinX) S.pinX=W*0.78;
-}
-size(); addEventListener('resize',size);
+/* reveals + progress */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.15});
+document.querySelectorAll('.rise').forEach((el,i)=>{el.style.transitionDelay=(i%4)*70+'ms';io.observe(el);});
+addEventListener('scroll',()=>{const h=document.documentElement;$('#prog i').style.width=(h.scrollTop/(h.scrollHeight-innerHeight)*100)+'%';},{passive:true});
 
-const charm=()=>({x:S.pinX+Math.sin(S.angle)*S.cord, y:Math.cos(S.angle)*S.cord});
-const impulse=a=>S.vel+=a*Math.sqrt(1100/Math.max(80,S.cord))*(Math.random()<.5?-1:1);
-
+/* ---------- the companion: a damped pendulum on a cord ---------- */
+const pivot=$('#pivot'),cord=$('#cord'),holder=$('#holder'),grab=$('#grab'),balloon=$('#balloon');
+const TUCK=70,DOWN=()=>Math.min(innerHeight*.42,340);
+const S={x:innerWidth*.8,angle:0,vel:0,len:TUCK,target:TUCK,drag:false,hidden:false,hangs:true};
+/* A hanger's len is how far down the cord it is; a stander's is where its
+   feet are. Same number, two meanings, so the rest of the page needn't care. */
+const FLOOR=()=>innerHeight-14, STAND_H=250;
+function pos(){const a=S.angle;return{x:S.x+Math.sin(a)*S.len,y:Math.cos(a)*S.len};}
 let last=performance.now();
-function frame(now){
-  const dt=Math.min(.05,(now-last)/1000); last=now;
-  // Which screen you are on decides where it hangs — until you move it
-  // yourself, and then it stays exactly where you left it.
-  if(!S.placed){
-    S.pinTarget = S.sec===0 ? W*0.78 : W*0.50;
-    S.pinX += (S.pinTarget-S.pinX)*(1-Math.pow(0.05,dt));
+function tick(t){
+  const dt=Math.min((t-last)/1000,.05);last=t;
+  if(!S.drag){
+    if(S.hangs){S.vel+=(-9*Math.sin(S.angle))*dt; S.vel*=Math.pow(.35,dt); S.angle+=S.vel*dt;}
+    else{S.angle=0;S.vel=0;}
+    const goal=S.hangs?(S.hidden?-200:S.target):(S.hidden?innerHeight+STAND_H+40:FLOOR());
+    S.len+=(goal-S.len)*(1-Math.pow(S.hangs?.003:.0008,dt));
   }
-  if(S.hangs){
-    const L=Math.max(80,S.cord);
-    S.vel += -(3200/L)*Math.sin(S.angle)*dt;
-    S.vel *= Math.pow(0.5,dt/2.0);
-    S.angle += S.vel*dt;
-  } else { S.angle=0; S.vel=0; }
-  // Going down is a smooth drop. Coming back up is a climb: short pulls with
-  // a pause between them, each pull giving a small sway, so it hauls itself up
-  // the line rather than gliding like a cursor.
-  if(S.cord > S.target + 1){
-    S.phase = (S.phase + dt) % 0.55;
-    if(S.phase < 0.3){
-      S.cord = Math.max(S.target, S.cord - 430*dt);
-      if(!S.pulling){ impulse(.04); S.pulling = true; }
-    } else S.pulling = false;
-  } else {
-    S.cord += (S.target-S.cord)*(1-Math.pow(0.004,dt));
-  }
-  cord.setAttribute('y2',S.cord.toFixed(1));
-  holder.setAttribute('transform',`translate(0 ${S.cord.toFixed(1)})`);
-  pivot.setAttribute('transform',`translate(${S.pinX.toFixed(1)} 0) rotate(${(S.angle*180/Math.PI).toFixed(2)})`);
-  const c=charm();
-  grab.setAttribute('cx',c.x); grab.setAttribute('cy',c.y);
-  // A hanger's art falls below the point, so the balloon clears its head at
-  // a fixed lift. One that stands reaches up from the point instead, and the
-  // balloon is flipped to sit on top of whatever height it turned out to be.
-  const lift = S.hangs ? 124 : 260;
-  balloon.classList.toggle('lift', !S.hangs);
-  if(balloon.classList.contains('show')){balloon.style.left=c.x+'px';balloon.style.top=(c.y-lift)+'px';}
-  if(chip.classList.contains('show')){chip.style.left=c.x+'px';chip.style.top=(c.y-lift-(balloon.classList.contains('show')?72:-32))+'px';}
-  requestAnimationFrame(frame);
+  const p=pos();
+  pivot.setAttribute('transform',`translate(${S.x} 0)`);
+  cord.setAttribute('x2',p.x-S.x); cord.setAttribute('y2',p.y);
+  holder.setAttribute('transform',`translate(${p.x-S.x} ${p.y}) rotate(${-S.angle*57.3})`);
+  grab.setAttribute('cx',p.x); grab.setAttribute('cy',S.hangs?p.y+55:p.y-STAND_H/2);
+  balloon.style.left=p.x+'px'; balloon.style.top=(S.hangs?p.y+150:p.y-STAND_H-130)+'px';
+  requestAnimationFrame(tick);
 }
+requestAnimationFrame(tick);
+function impulse(v){if(!reduce)S.vel+=v;}
 
-let prev=null;
-addEventListener('mousemove',e=>{
-  if(prev){
-    const sp=Math.hypot(e.clientX-prev.x,e.clientY-prev.y);
-    const c=charm(), d=Math.hypot(e.clientX-c.x,e.clientY-c.y);
-    if(d<230 && sp>2) S.vel += (Math.sign(c.x-e.clientX)||1)*Math.min(sp,60)*(1-d/230)*0.0022;
-  }
-  prev={x:e.clientX,y:e.clientY};
-});
-
-let drag=false;
-grab.addEventListener('pointerdown',e=>{drag=true;grab.setPointerCapture(e.pointerId);e.preventDefault();});
+/* cursor nearby nudges it, like brushing past */
+let px=0,py=0;
 addEventListener('pointermove',e=>{
-  if(!drag) return;
-  // Both halves of the drag: where the line is pinned follows the cursor and
-  // sticks, how far down it hangs is elastic.
-  S.placed = true;
-  S.pinX = Math.max(70, Math.min(W-70, e.clientX));
-  const beyond=Math.max(0,e.clientY-DOWN);
-  S.target=Math.max(110,Math.min(e.clientY, DOWN+190*(1-Math.exp(-beyond/190))));
-  S.angle*=0.82; S.vel*=0.82;
+  const p=pos(),dx=e.clientX-px,d=Math.hypot(e.clientX-p.x,e.clientY-p.y-55);
+  if(!S.drag&&S.hangs&&d<180)S.vel+=dx*.0016*(1-d/180);
+  px=e.clientX;py=e.clientY;
+  if(S.drag&&!S.hangs){S.x=Math.max(110,Math.min(innerWidth-110,e.clientX));return;}
+  if(S.drag){S.len=Math.max(TUCK,Math.min(innerHeight*.8,Math.hypot(e.clientX-S.x,e.clientY)-55));S.angle=Math.atan2(e.clientX-S.x,e.clientY);}
 });
-const drop=()=>{if(!drag)return;drag=false;if(!S.hangs)return;
-  S.target=balloon.classList.contains('show')?DOWN:TUCK;impulse(.1);};
-addEventListener('pointerup',drop); addEventListener('pointercancel',drop);
-grab.addEventListener('dblclick',()=>{ if(!S.hangs)return; S.target=Math.max(S.target,250); impulse(.5); });
+grab.addEventListener('pointerdown',e=>{S.drag=true;grab.setPointerCapture(e.pointerId);});
+addEventListener('pointerup',()=>{if(!S.drag)return;S.drag=false;if(S.hangs)S.target=TUCK;});
+addEventListener('resize',()=>{S.x=S.hangs?innerWidth*.8:innerWidth-150;});
 
-const LINES=['Time to drink some water','Stand up and stretch','Look away for twenty seconds','Break time'];
-let n=0,hideT=null;
-function remind(){
+/* the balloon */
+const LINES=['Time to drink some water','Stand up and stretch','Look away for twenty seconds'];
+const CHARS={
+  spider:{hangs:true,say:['Water. The good stuff.','Up you get. Stretch those two legs.',"Look at something far away. I'll wait."]},
+  ironbot:{hangs:false,say:['Coolant levels low. Drink something.','Stand up. Your servos are seizing.','Look at something far away. I will hold position.']},
+  spiderMan:{hangs:true,say:['Aunt May says drink water.','Dude, your back is gonna hate you.','Twenty seconds — look at something far away!']},
+  ironMan:{hangs:false,say:['Hydrate. JARVIS insists.',"Up. You're seizing like a bad servo.",'Look away. Twenty seconds. JARVIS is watching.']},
+  cap:{hangs:false,say:['Soldier. Hydrate.','On your feet. I can do this all day — can you?','Eyes off the screen. Twenty seconds.']},
+  cat:{hangs:false,say:LINES}, dog:{hangs:false,say:LINES}
+};
+let kind='spider';
+let n=0,hideT;
+function remind(text){
   clearTimeout(hideT);
-  const lines=(CHARS[S.kind]||{}).say||LINES;
-  $('#bText').textContent=lines[n++%lines.length];
-  if(S.hangs){ S.target=DOWN; impulse(.34); }
-  setTimeout(()=>balloon.classList.add('show'),380);
-  hideT=setTimeout(dismiss,9500);
+  const lines=CHARS[kind].say;
+  $('#bText').textContent=typeof text==='string'?text:lines[n++%lines.length];
+  S.hidden=false;
+  if(S.hangs){S.target=DOWN();impulse(.5);} else if(!reduce) S.len-=70; // a little hop
+  setTimeout(()=>balloon.classList.add('show'),350);
+  hideT=setTimeout(dismiss,9000);
 }
 function dismiss(){balloon.classList.remove('show');if(S.hangs)S.target=TUCK;}
+$('#bDone').onclick=()=>{clearTimeout(hideT);$('#bText').textContent='Nice.';setTimeout(dismiss,700);impulse(.8);};
+$('#bLater').onclick=()=>{clearTimeout(hideT);$('#bText').textContent='Fine. I\'ll be back.';setTimeout(dismiss,900);impulse(-.3);};
+$('#bPoke').onclick=()=>remind(); $('#bSend').onclick=()=>remind();
+document.querySelectorAll('.phrase').forEach(b=>b.onclick=()=>remind(b.dataset.say));
 
-/* Done and Later are the app's own two answers, and they are the only reason
-   the spider has more than one face. It wears the answer on the way back up,
-   then forgets it — the same 2.8s the app gives a reaction. */
-const cSpider=$('#cSpider'); let moodT=null;
-function answer(mood){
-  cSpider.classList.remove('happy','sad');
-  cSpider.classList.add(mood);
-  clearTimeout(moodT);
-  moodT=setTimeout(()=>cSpider.classList.remove('happy','sad'),2800);
-  clearTimeout(hideT); dismiss();
-}
-$('#bDone').onclick=e=>{e.stopPropagation();answer('happy');};
-$('#bLater').onclick=e=>{e.stopPropagation();answer('sad');};
-grab.addEventListener('click',()=>{if(balloon.classList.contains('show'))dismiss();});
-$('#bRemind').onclick=remind; $('#bRemind2').onclick=remind;
+/* ---------- 1: toasts that leave before anyone looks ---------- */
+const bell='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>';
+const T=['Drink water','Stand up','Look away for 20s','Standup in 5 minutes','Call Sam','Take a break'];
+const stack=$('#stack');let missed=0,ti=0,stackOn=false;
+new IntersectionObserver(([e])=>stackOn=e.isIntersecting).observe(stack);
+setInterval(()=>{
+  if(!stackOn||document.hidden)return;
+  const el=document.createElement('div');el.className='toast';
+  el.innerHTML=`<i>${bell}</i><div>${T[ti++%T.length]}<small>Reminders · now</small></div>`;
+  el.style.top='0';el.style.transform='translateX(110%)';stack.prepend(el);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.style.transform='none'));
+  [...stack.children].forEach((c,i)=>{c.style.top=i*84+'px';if(i>3){c.style.opacity=0;c.style.transform='translateX(-30px) rotate(-4deg)';setTimeout(()=>c.remove(),500);}});
+  setTimeout(()=>{if(el.isConnected){el.style.opacity=0;el.style.transform='translateX(110%)';$('#missed').textContent=++missed;setTimeout(()=>el.remove(),500);}},4200);
+},1300);
 
-let fT=null;
+/* ---------- 2: work-time vs wall-clock race ---------- */
+const GOAL=20;let ours=0,theirs=0,lastMove=-1e9,fired=false;
+const pad=$('#pad');
+pad.addEventListener('pointermove',()=>lastMove=performance.now());
+let raceOn=false;new IntersectionObserver(([e])=>raceOn=e.isIntersecting).observe(pad);
+setInterval(()=>{
+  if(!raceOn)return;
+  const working=performance.now()-lastMove<600;
+  theirs=Math.min(GOAL,theirs+.1); if(working)ours=Math.min(GOAL,ours+.1);
+  pad.classList.toggle('live',working);
+  $('#barOurs').style.width=ours/GOAL*100+'%';$('#barThem').style.width=theirs/GOAL*100+'%';
+  const s=Math.floor(ours);$('#clock').textContent=`0:${String(s).padStart(2,'0')}`;
+  $('#state').innerHTML=theirs>=GOAL&&ours<GOAL?'Ordinary one already fired. <span class="off">Nobody saw it.</span>'
+    :working?'<span class="on">● Counting</span> — you are at the keyboard':'<span class="off">❚❚ Paused</span> — you stepped away';
+  if(ours>=GOAL&&!fired){fired=true;remind('Look away for twenty seconds');setTimeout(()=>{ours=theirs=0;fired=false;},6000);}
+},100);
+
+/* ---------- 4: typing hides it, focus counts down ---------- */
+let typeT;
+$('#typebox').addEventListener('input',()=>{S.hidden=true;clearTimeout(typeT);typeT=setTimeout(()=>S.hidden=false,1200);});
+let fT;
 $('#bFocus').onclick=()=>{
-  clearInterval(fT); chip.classList.add('show');
-  let left=25*60; const total=left;
-  const tick=()=>{
-    left-=20;
-    if(left<=0){clearInterval(fT);chip.classList.remove('show');remind();return;}
-    chip.firstChild.textContent=`${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`;
-    chipFill.style.width=(100-left/total*100)+'%';
-  };
-  tick(); fT=setInterval(tick,110);
+  clearInterval(fT);let left=25*60;
+  fT=setInterval(()=>{left-=30; // ponytail: 50x speed so the demo ends in under a minute
+    if(left<=0){clearInterval(fT);$('#tLeft').textContent='25:00';remind('Focus done. Stretch?');return;}
+    $('#tLeft').textContent=`${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`;},600);
 };
 
-let tT=null;
-$('#typebox').addEventListener('input',()=>{
-  clearTimeout(tT);
-  if(!S.hangs) return;
-  if(!balloon.classList.contains('show')) S.target=-40;
-  tT=setTimeout(()=>{if(!balloon.classList.contains('show'))S.target=TUCK;},2500);
+/* ---------- cast ---------- */
+document.querySelectorAll('.who').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.who').forEach(o=>o.setAttribute('aria-pressed',o===b));
+  kind=b.dataset.char;n=0;S.hangs=CHARS[kind].hangs;
+  // A hanger dangles below the thread; a stander rests its feet on the point.
+  const w=S.hangs?150:220,h=S.hangs?150:STAND_H,who=$('#who');
+  who.setAttribute('href',b.dataset.img);who.setAttribute('width',w);who.setAttribute('height',h);
+  who.setAttribute('x',-w/2);who.setAttribute('y',S.hangs?-18:-h);
+  cord.style.display=S.hangs?'':'none';
+  S.angle=S.vel=0;
+  if(S.hangs){S.len=-200;S.target=TUCK;} else {S.x=innerWidth-150;S.len=innerHeight+STAND_H;} // far right, clear of the hero badge
+  setTimeout(()=>remind('Hi. I live here now.'),500);
 });
 
-document.querySelectorAll('.who .getit').forEach(a=>a.addEventListener('click',e=>e.stopPropagation()));
-
-/* Picking a card puts that companion on the page. Two of them hang from the
-   thread; the rest stand, which is exactly the split the app makes — so the
-   cord goes away for those and the pendulum stops being integrated rather
-   than being damped to nothing. Lines are each character's own, lifted from
-   Companions.swift. */
-const CHARS={
-  spider:{hangs:true, say:['Water. The good stuff.','Up you get. Stretch those two legs.',"Look at something far away. I'll wait."]},
-  ironbot:{img:'img/ironbot.png', hangs:false,
-    say:['Coolant levels low. Drink something.','Stand up. Your servos are seizing.','Look at something far away. I will hold position.']},
-  spiderMan:{img:'img/spiderMan.png', hangs:true,
-    say:['Aunt May says drink water.','Dude, your back is gonna hate you.','Twenty seconds — look at something far away!']},
-  ironMan:{img:'img/ironMan.png', hangs:false,
-    say:['Hydrate. JARVIS insists.',"Up. You're seizing like a bad servo.",'Look away. Twenty seconds. JARVIS is watching.']},
-  cap:{img:'img/cap.png', hangs:false,
-    say:['Soldier. Hydrate.','On your feet. I can do this all day — can you?','Eyes off the screen. Twenty seconds.']},
-  cat:{img:'img/cat.png', hangs:false,
-    say:['Drink some water','Stand up and stretch','Look away for twenty seconds']},
-  dog:{img:'img/dog.png', hangs:false,
-    say:['Drink some water','Stand up and stretch','Look away for twenty seconds']}
-};
-const cPhoto=$('#cPhoto'), cMark=$('#cSpider');
-
-function pick(id){
-  const c=CHARS[id]; if(!c) return;
-  S.kind=id; S.hangs=c.hangs; n=0;
-  cMark.style.display = c.img ? 'none' : '';
-  cPhoto.style.display = c.img ? '' : 'none';
-  if(c.img){
-    cPhoto.setAttribute('href', c.img);
-    // A hanger dangles below the thread; one that stands rests its feet on
-    // the point instead, so the same y means two different things. The
-    // standing box is also taller: the full-body art is tall and thin, and
-    // fitted into the hanger's box it shrank to nothing.
-    const w = c.hangs ? 210 : 250, h = c.hangs ? 220 : 260;
-    cPhoto.setAttribute('width', w); cPhoto.setAttribute('height', h);
-    cPhoto.setAttribute('x', -w/2); cPhoto.setAttribute('y', c.hangs ? -8 : -h);
-  }
-  cord.style.display = c.hangs ? '' : 'none';
-  S.angle=0; S.vel=0;
-  S.placed=!c.hangs;
-  if(!c.hangs){ S.pinX=Math.min(S.pinX, W-150); S.target=H-70; }
-  else if(S.target<TUCK+10) S.target=TUCK;
-  document.querySelectorAll('[data-char]').forEach(el=>
-    el.setAttribute('aria-pressed', el.dataset.char===id ? 'true' : 'false'));
-  remind();
-}
-document.querySelectorAll('[data-char]').forEach(b=>b.onclick=()=>pick(b.dataset.char));
-
-/* cards tilt toward the cursor — depth you can feel, not just see */
-document.querySelectorAll('[data-tilt]').forEach(el=>{
-  el.addEventListener('pointermove',e=>{
-    const r=el.getBoundingClientRect();
-    const x=(e.clientX-r.left)/r.width-.5, y=(e.clientY-r.top)/r.height-.5;
-    el.style.transform=`perspective(1000px) rotateY(${x*9}deg) rotateX(${-y*9}deg) translateZ(16px)`;
-  });
-  el.addEventListener('pointerleave',()=>{el.style.transform='';});
-});
-
-/* reveal + progress + which screen we are on */
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{rootMargin:'-70px'});
-document.querySelectorAll('.rise').forEach((el,i)=>{el.style.transitionDelay=(i%3*80)+'ms';io.observe(el);});
-const bar=$('#prog i'), secs=[...document.querySelectorAll('[data-sec]')];
-const onScroll=()=>{
-  const max=document.documentElement.scrollHeight-innerHeight;
-  bar.style.width=(max>0?scrollY/max*100:0)+'%';
-  let cur=0;
-  secs.forEach(s=>{const r=s.getBoundingClientRect(); if(r.top<innerHeight*0.45) cur=+s.dataset.sec;});
-  S.sec=cur;
-};
-addEventListener('scroll',onScroll,{passive:true}); onScroll();
-
-let ours=0,them=0,away=false,started=false; const GOAL=30;
-$('#bAway').onclick=e=>{
-  away=!away;
-  e.currentTarget.textContent = away?'Come back to the desk →':'Step away from the desk →';
-  if(!started){started=true;setInterval(tick,200);}
-};
-function tick(){
-  if(!away) ours=Math.min(GOAL,ours+1);
-  them=Math.min(GOAL,them+1);
-  $('#barOurs').style.width=ours/GOAL*100+'%';
-  $('#barThem').style.width=them/GOAL*100+'%';
-  $('#raceState').innerHTML = ours>=GOAL?'<b>Yours fires — and you are here to see it.</b>'
-    : them>=GOAL?'<b>Theirs fired into an empty chair.</b>'
-    : (away?'Away. Yours is paused, theirs is not.':ours+'s banked · '+them+'s elapsed');
-}
-
-if(!reduced) requestAnimationFrame(frame);
-else{cord.setAttribute('y2',TUCK);holder.setAttribute('transform',`translate(0 ${TUCK})`);pivot.setAttribute('transform',`translate(${W*0.78} 0)`);}
-})();
+/* say hello once the page settles */
+setTimeout(()=>remind('Psst. Up here.'),1400);
 </script>
-
 </body>
 </html>
