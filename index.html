@@ -170,9 +170,9 @@ button{font:inherit;cursor:pointer;color:inherit;border:0}
 .who:hover{transform:translateY(-8px) rotate(-1.5deg)}
 .who:active{transform:scale(.96)}
 .who[aria-pressed="true"]{box-shadow:var(--clay),0 0 0 4px var(--orange)}
-.who .shot{display:grid;place-items:center;aspect-ratio:1;border-radius:28px;background:var(--peach);margin-bottom:14px;box-shadow:var(--clay-in)}
+.who .shot{position:relative;display:block;aspect-ratio:1;border-radius:28px;background:var(--peach);margin-bottom:14px;box-shadow:var(--clay-in)}
 .who:nth-child(4n+2) .shot{background:var(--sky)} .who:nth-child(4n+3) .shot{background:var(--rose)} .who:nth-child(4n) .shot{background:var(--mint)}
-.who img{width:82%;height:82%;object-fit:contain;filter:drop-shadow(0 12px 10px rgba(60,20,40,.3));transition:transform .3s var(--pop)}
+.who img{position:absolute;left:9%;top:9%;width:82%;height:82%;object-fit:contain;filter:drop-shadow(0 12px 10px rgba(60,20,40,.3));transition:transform .3s var(--pop)}
 .who:hover img{transform:scale(1.08) rotate(3deg)}
 .who h3{font-size:26px;margin:0 6px 6px}
 .who p{margin:0 6px 6px;font-size:15px;font-weight:700;line-height:1.4;color:var(--soft)}
@@ -345,8 +345,8 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
       <button class="who rise" data-char="spider" data-img="img/spider.png" aria-pressed="true"><span class="shot"><img src="img/spider.png" alt="" width="320" height="320"></span><h3>Spider</h3><p>The default and the menu bar icon. Drag it down and the silk stretches.</p></button>
       <button class="who rise" data-char="ironbot" data-img="img/ironbot.png" aria-pressed="false"><span class="shot"><img src="img/ironbot.png" alt="" loading="lazy" width="320" height="320"></span><h3>Ironbot</h3><p>Drawn for the app. Lights the thrusters and fires from both palms.</p></button>
       <button class="who rise" data-char="spiderMan" data-img="img/spiderMan.png" aria-pressed="false"><span class="shot"><img src="img/spiderMan.png" alt="" loading="lazy" width="320" height="320"></span><h3>Spider-Man</h3><p>The original, on the same thread with the same moves.</p></button>
-      <button class="who rise" data-char="ironMan" data-img="img/ironMan.png" aria-pressed="false"><span class="shot"><img src="img/ironMan.png" alt="" loading="lazy" width="320" height="320"></span><h3>Iron Man</h3><p>Flies in on his thrusters and fires a volley when there is something to say.</p></button>
-      <button class="who rise" data-char="tony" data-img="img/tonyStark.png" aria-pressed="false"><span class="shot"><img src="img/tonyStark.png" alt="" loading="lazy" width="282" height="520"></span><h3>Tony Stark</h3><p>Waits in a blazer, suits up piece by piece under a sweep of blue light, then rises and fires from both palms.</p></button>
+      <button class="who rise" data-char="ironMan" data-img="img/ironMan.png" aria-pressed="false"><span class="shot"><img src="img/ironMan.png" alt="" loading="lazy" width="320" height="320"></span><h3>Iron Man</h3><p>Our own red-and-gold armour. Flies in on palm and boot thrusters and fires a beam from each palm.</p></button>
+      <button class="who rise" data-char="tony" data-img="img/tonyStark.png" aria-pressed="false"><span class="shot"><img src="img/tonyStark.png" alt="" loading="lazy" width="233" height="520"></span><h3>Tony Stark</h3><p>Waits in a blazer, suits up piece by piece under a sweep of blue light, then rises and fires from both palms.</p></button>
       <button class="who rise" data-char="cap" data-img="img/cap.png" aria-pressed="false"><span class="shot"><img src="img/cap.png" alt="" loading="lazy" width="320" height="320"></span><h3>Captain America</h3><p>Throws the shield. It glances off two screen edges and comes home.</p></button>
       <button class="who rise" data-char="cat" data-img="img/cat.png" aria-pressed="false"><span class="shot"><img src="img/cat.png" alt="" loading="lazy" width="320" height="320"></span><h3>Cat</h3><p>Asleep in a corner until there is news, then walks over.</p></button>
       <button class="who rise" data-char="dog" data-img="img/dog.png" aria-pressed="false"><span class="shot"><img src="img/dog.png" alt="" loading="lazy" width="320" height="320"></span><h3>Dog</h3><p>Floppy ears and a tail that gives the game away.</p></button>
