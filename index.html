@@ -173,6 +173,9 @@ button{font:inherit;cursor:pointer;color:inherit;border:0}
 .who .shot{position:relative;display:block;aspect-ratio:1;border-radius:28px;background:var(--peach);margin-bottom:14px;box-shadow:var(--clay-in)}
 .who:nth-child(4n+2) .shot{background:var(--sky)} .who:nth-child(4n+3) .shot{background:var(--rose)} .who:nth-child(4n) .shot{background:var(--mint)}
 .who img{position:absolute;left:9%;top:9%;width:82%;height:82%;object-fit:contain;filter:drop-shadow(0 12px 10px rgba(60,20,40,.3));transition:transform .3s var(--pop)}
+/* Full-length figures are limited by the box's height, so at the same 82%
+   they read far smaller than the round ones. Let them use nearly all of it. */
+.who[data-char="ironMan"] img,.who[data-char="tony"] img,.who[data-char="cap"] img{left:3%;top:3%;width:94%;height:94%}
 .who:hover img{transform:scale(1.08) rotate(3deg)}
 .who h3{font-size:26px;margin:0 6px 6px}
 .who p{margin:0 6px 6px;font-size:15px;font-weight:700;line-height:1.4;color:var(--soft)}
