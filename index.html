@@ -82,6 +82,8 @@ button{font:inherit;cursor:pointer;color:inherit;border:0}
 .hero .lede{max-width:34ch;font-size:clamp(20px,2vw,26px);color:var(--soft)}
 .hero .lede mark{background:var(--butter);color:var(--ink);padding:0 .3em;border-radius:10px;box-shadow:var(--clay-pop)}
 .cta{display:flex;flex-wrap:wrap;gap:20px;margin-top:36px}
+.ver{margin-top:16px;font-size:15px;font-weight:700;opacity:.8}
+.ver a{color:inherit;text-underline-offset:3px}
 .stamp{position:absolute;right:8%;bottom:-40px;width:150px;height:150px;border-radius:50%;
   background:linear-gradient(160deg,#D9C8FF,#B79CFF);display:grid;place-items:center;text-align:center;font-family:var(--display);
   font-size:18px;line-height:1.05;color:var(--ink);box-shadow:var(--clay-pop);animation:float 6s ease-in-out infinite}
@@ -235,6 +237,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
         Download for Mac</a>
       <button class="btn btn--white" id="bPoke">Poke it</button>
     </div>
+    <p class="ver rise"><a data-ver href="https://github.com/bhagyeshrangole/hangabout/releases/latest">Latest version · what's new</a></p>
     <div class="stamp rise" aria-hidden="true"><span><b>8</b>companions</span></div>
   </div>
 </header>
@@ -371,6 +374,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 21h16"/></svg>
         Download for Mac</a>
     </div>
+    <p class="ver rise"><a data-ver href="https://github.com/bhagyeshrangole/hangabout/releases/latest">Latest version · what's new</a></p>
     <p class="rise" style="margin-top:22px;max-width:52ch">After that it updates itself — no download, no drag, no warning. Needs an Apple Silicon Mac on macOS 14 or later.</p>
   </div>
 </section>
@@ -379,6 +383,14 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
 
 <script>
 const $=s=>document.querySelector(s);
+
+/* the version under the download buttons, read from the latest release so it never goes stale */
+fetch('https://api.github.com/repos/bhagyeshrangole/hangabout/releases/latest')
+  .then(r=>r.ok?r.json():Promise.reject())
+  .then(r=>{
+    const v=r.tag_name.replace(/^v/,''), d=new Date(r.published_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+    document.querySelectorAll('[data-ver]').forEach(a=>{a.textContent=`Version ${v} · ${d} · what's new`;a.href=r.html_url});
+  }).catch(()=>{});
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* marquee */
