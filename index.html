@@ -84,6 +84,37 @@ button{font:inherit;cursor:pointer;color:inherit;border:0}
 .cta{display:flex;flex-wrap:wrap;gap:20px;margin-top:36px}
 .ver{margin-top:16px;font-size:15px;font-weight:700;opacity:.8}
 .ver a{color:inherit;text-underline-offset:3px}
+/* what's new: release notes in a clay sheet, one version at a time */
+#news{width:min(860px,calc(100vw - 32px));max-height:min(640px,calc(100vh - 48px));padding:0;border:0;border-radius:32px;background:var(--surf);color:var(--text);box-shadow:var(--clay),0 40px 80px -20px rgba(0,0,0,.8);overflow:hidden}
+#news::backdrop{background:rgba(6,9,18,.7);backdrop-filter:blur(6px)}
+#news[open]{display:grid;grid-template-columns:200px minmax(0,1fr);animation:newsIn .35s var(--pop)}
+@keyframes newsIn{from{opacity:0;transform:translateY(24px) scale(.96)}}
+#news .rail{background:var(--deep);padding:28px 16px;overflow-y:auto;box-shadow:var(--clay-in)}
+#news .rail h2{font-size:26px;margin:0 8px 18px}
+#news .rail button{display:flex;justify-content:space-between;align-items:center;width:100%;margin:0 0 8px;padding:12px 16px;border:0;border-radius:18px;background:transparent;color:var(--soft);font:700 17px var(--display);cursor:pointer;text-align:left;transition:transform .2s var(--pop),background .2s}
+#news .rail button:hover{background:rgba(255,255,255,.05);transform:translateX(3px)}
+#news .rail button[aria-selected="true"]{background:var(--surf);color:var(--text);box-shadow:var(--clay-sm)}
+#news .rail small{font:800 11px var(--body);letter-spacing:.06em;padding:3px 8px;border-radius:99px;background:linear-gradient(180deg,#FFB083,var(--orange));color:#3A1606}
+#news .body{padding:34px 40px 40px;overflow-y:auto;position:relative;min-width:0;scrollbar-color:var(--soft) transparent}
+#news .body h3{font-size:38px;margin:0 0 6px}
+#news .body .when{color:var(--soft);font-size:15px;margin:0 0 22px}
+#news .body ul{padding-left:22px}
+#news .body li{margin:0 0 12px}
+#news .body h4{font:700 20px var(--display);margin:22px 0 8px}
+#news .body b{color:var(--peach)}
+#news .x{position:absolute;top:18px;right:18px;width:44px;height:44px;border:0;border-radius:50%;background:var(--deep);color:var(--text);font-size:24px;cursor:pointer;box-shadow:var(--clay-sm)}
+#news .note{animation:noteIn .3s ease-out}
+@keyframes noteIn{from{opacity:0;transform:translateX(14px)}}
+@media (max-width:640px){
+  #news[open]{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
+  #news .rail{display:flex;gap:8px;overflow-x:auto;padding:16px 64px 16px 16px;scrollbar-width:none}
+  #news .x{top:12px;right:12px}
+  #news .rail h2{display:none}
+  #news .rail button{width:auto;flex:none;margin:0;gap:8px}
+  #news .body{padding:26px 22px 30px}
+  #news .body h3{font-size:30px}
+}
+@media (prefers-reduced-motion:reduce){#news[open],#news .note{animation:none}}
 .stamp{position:absolute;right:8%;bottom:-40px;width:150px;height:150px;border-radius:50%;
   background:linear-gradient(160deg,#D9C8FF,#B79CFF);display:grid;place-items:center;text-align:center;font-family:var(--display);
   font-size:18px;line-height:1.05;color:var(--ink);box-shadow:var(--clay-pop);animation:float 6s ease-in-out infinite}
@@ -379,18 +410,71 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
   </div>
 </section>
 
-<footer><div class="wrap"><span>Designed by <a href="https://github.com/bhagyeshrangole">Bhagyesh Rangole</a></span><a href="https://github.com/bhagyeshrangole/hangabout/releases">All versions →</a></div></footer>
+<footer><div class="wrap"><span>Designed by <a href="https://github.com/bhagyeshrangole">Bhagyesh Rangole</a></span><a data-news href="https://github.com/bhagyeshrangole/hangabout/releases">All versions →</a></div></footer>
+
+<dialog id="news" aria-label="What's new in Hangabout">
+  <nav class="rail" role="tablist"><h2>What's new</h2></nav>
+  <div class="body"><button class="x" autofocus aria-label="Close" onclick="this.closest('dialog').close()">×</button><div class="note"></div></div>
+</dialog>
 
 <script>
 const $=s=>document.querySelector(s);
 
-/* the version under the download buttons, read from the latest release so it never goes stale */
-fetch('https://api.github.com/repos/bhagyeshrangole/hangabout/releases/latest')
+/* the version under the download buttons, and the what's-new sheet, both read
+   from the releases themselves so they never go stale */
+const news=$('#news'), rail=news.querySelector('.rail'), note=news.querySelector('.note');
+const esc=t=>t.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// The notes are short Markdown: paragraphs, "- " lists, ### headings, **bold**.
+// Everything after "---" is the install how-to every release repeats.
+function md(text){
+  const out=[];let list=false;
+  for(const raw of text.split('\n---')[0].trim().split('\n')){
+    const line=esc(raw.trim()).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
+    const li=line.match(/^[-*] (.*)/);
+    if(li){if(!list){out.push('<ul>');list=true}out.push(`<li>${li[1]}</li>`);continue}
+    if(list){out.push('</ul>');list=false}
+    if(!line)continue;
+    const h=line.match(/^#+ (.*)/);
+    out.push(h?`<h4>${h[1]}</h4>`:`<p>${line}</p>`);
+  }
+  if(list)out.push('</ul>');
+  return out.join('');
+}
+const day=d=>new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+let releases=[];
+function show(i){
+  const r=releases[i];
+  rail.querySelectorAll('button').forEach((b,j)=>{b.setAttribute('aria-selected',j===i);if(j===i)b.scrollIntoView({block:'nearest',inline:'nearest'})});
+  note.innerHTML=`<h3>Version ${r.tag_name.replace(/^v/,'')}</h3><p class="when">${day(r.published_at)}</p>${md(r.body||'')}`;
+  note.style.animation='none';note.offsetWidth;note.style.animation='';
+}
+fetch('https://api.github.com/repos/bhagyeshrangole/hangabout/releases?per_page=100')
   .then(r=>r.ok?r.json():Promise.reject())
-  .then(r=>{
-    const v=r.tag_name.replace(/^v/,''), d=new Date(r.published_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
-    document.querySelectorAll('[data-ver]').forEach(a=>{a.textContent=`Version ${v} · ${d} · what's new`;a.href=r.html_url});
+  .then(list=>{
+    releases=list.filter(r=>!r.draft);
+    if(!releases.length)return;
+    const r=releases[0], v=r.tag_name.replace(/^v/,''), d=new Date(r.published_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+    document.querySelectorAll('[data-ver]').forEach(a=>a.textContent=`Version ${v} · ${d} · what's new`);
+    releases.forEach((r,i)=>{
+      const b=document.createElement('button');
+      b.setAttribute('role','tab');
+      b.innerHTML=`${esc(r.tag_name)}${i?'':'<small>NEW</small>'}`;
+      b.onclick=()=>show(i);
+      rail.append(b);
+    });
+    // Without the notes loaded these links simply go to GitHub, as before.
+    document.querySelectorAll('[data-ver],[data-news]').forEach(a=>a.addEventListener('click',e=>{
+      e.preventDefault();show(0);news.showModal();
+    }));
+    rail.addEventListener('keydown',e=>{
+      const i=[...rail.querySelectorAll('button')].indexOf(document.activeElement);
+      if(i<0||!['ArrowDown','ArrowUp','ArrowLeft','ArrowRight'].includes(e.key))return;
+      e.preventDefault();
+      const n=Math.max(0,Math.min(releases.length-1,i+(e.key==='ArrowDown'||e.key==='ArrowRight'?1:-1)));
+      show(n);rail.querySelectorAll('button')[n].focus();
+    });
   }).catch(()=>{});
+news.addEventListener('click',e=>{if(e.target===news)news.close()});
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* marquee */
