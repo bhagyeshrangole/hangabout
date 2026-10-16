@@ -269,7 +269,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
       <button class="btn btn--white" id="bPoke">Poke it</button>
     </div>
     <p class="ver rise"><a data-ver href="https://github.com/bhagyeshrangole/hangabout/releases/latest">Latest version · what's new</a></p>
-    <div class="stamp rise" aria-hidden="true"><span><b>8</b>companions</span></div>
+    <div class="stamp rise" aria-hidden="true"><span><b>9</b>companions</span></div>
   </div>
 </header>
 
@@ -385,6 +385,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
       <button class="who rise" data-char="ironMan" data-img="img/ironMan.png" aria-pressed="false"><span class="shot"><img src="img/ironMan.png" alt="" loading="lazy" width="320" height="320"></span><h3>Iron Man</h3><p>Our own red-and-gold armour. Flies in on palm and boot thrusters and fires a beam from each palm.</p></button>
       <button class="who rise" data-char="tony" data-img="img/tonyStark.png" aria-pressed="false"><span class="shot"><img src="img/tonyStark.png" alt="" loading="lazy" width="233" height="520"></span><h3>Tony Stark</h3><p>Waits in a blazer, suits up piece by piece under a sweep of blue light, then rises and fires from both palms.</p></button>
       <button class="who rise" data-char="cap" data-img="img/cap.png" aria-pressed="false"><span class="shot"><img src="img/cap.png" alt="" loading="lazy" width="320" height="320"></span><h3>Captain America</h3><p>Throws the shield. It glances off two screen edges and comes home.</p></button>
+      <button class="who rise" data-char="halo" data-img="img/halo.png" aria-pressed="false"><span class="shot"><img src="img/halo.png" alt="" loading="lazy" width="320" height="320"></span><h3>Halo</h3><p>A holographic AI core. Opens out where it floats to bring you news, calls you Sir and says it out loud.</p></button>
       <button class="who rise" data-char="cat" data-img="img/cat.png" aria-pressed="false"><span class="shot"><img src="img/cat.png" alt="" loading="lazy" width="320" height="320"></span><h3>Cat</h3><p>Asleep in a corner until there is news, then walks over.</p></button>
       <button class="who rise" data-char="dog" data-img="img/dog.png" aria-pressed="false"><span class="shot"><img src="img/dog.png" alt="" loading="lazy" width="320" height="320"></span><h3>Dog</h3><p>Floppy ears and a tail that gives the game away.</p></button>
     </div>
@@ -536,6 +537,7 @@ const CHARS={
   tony:{hangs:false,say:['Was there ever any doubt? Drink some water.',"Up. You're seizing like a bad servo.",'Look away. Twenty seconds. I am Iron Man.']},
   ironMan:{hangs:false,say:['Hydrate. JARVIS insists.',"Up. You're seizing like a bad servo.",'Look away. Twenty seconds. JARVIS is watching.']},
   cap:{hangs:false,say:['Soldier. Hydrate.','On your feet. I can do this all day — can you?','Eyes off the screen. Twenty seconds.']},
+  halo:{hangs:false,voice:true,say:['Sir, your hydration is below optimal. A glass of water, perhaps?',"Sir, you've been seated for some time. I'd recommend standing.",'Sir, your eyes could use a rest. Look at something far away.']},
   cat:{hangs:false,say:LINES}, dog:{hangs:false,say:LINES}
 };
 let kind='spider';
@@ -543,15 +545,27 @@ let n=0,hideT;
 function remind(text){
   clearTimeout(hideT);
   const lines=CHARS[kind].say;
-  $('#bText').textContent=typeof text==='string'?text:lines[n++%lines.length];
+  const said=typeof text==='string'?(CHARS[kind].voice?'Sir, '+text.charAt(0).toLowerCase()+text.slice(1):text):lines[n++%lines.length];
+  $('#bText').textContent=said;
+  speak(said);
   S.hidden=false;
   if(S.hangs){S.target=DOWN();impulse(.5);} else if(!reduce) S.len-=70; // a little hop
   setTimeout(()=>balloon.classList.add('show'),350);
   hideT=setTimeout(dismiss,9000);
 }
+/* Halo says it out loud, in a British voice where the browser has one, as in the app */
+function speak(line){
+  if(!CHARS[kind].voice||!('speechSynthesis' in window))return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(line.replace('—',','));
+  const v=speechSynthesis.getVoices();
+  u.voice=v.find(x=>/Daniel/.test(x.name))||v.find(x=>x.lang==='en-GB')||null;
+  u.rate=.95;u.pitch=.9;
+  speechSynthesis.speak(u);
+}
 function dismiss(){balloon.classList.remove('show');if(S.hangs)S.target=TUCK;}
-$('#bDone').onclick=()=>{clearTimeout(hideT);$('#bText').textContent='Nice.';setTimeout(dismiss,700);impulse(.8);};
-$('#bLater').onclick=()=>{clearTimeout(hideT);$('#bText').textContent='Fine. I\'ll be back.';setTimeout(dismiss,900);impulse(-.3);};
+$('#bDone').onclick=()=>{clearTimeout(hideT);const ok=CHARS[kind].voice?"Sir, well done. I've logged it.":'Nice.';$('#bText').textContent=ok;speak(ok);setTimeout(dismiss,700);impulse(.8);};
+$('#bLater').onclick=()=>{clearTimeout(hideT);const no=CHARS[kind].voice?"Sir, as you wish. I'll be here.":'Fine. I\'ll be back.';$('#bText').textContent=no;speak(no);setTimeout(dismiss,900);impulse(-.3);};
 $('#bPoke').onclick=()=>remind(); $('#bSend').onclick=()=>remind();
 document.querySelectorAll('.phrase, button.what').forEach(b=>b.onclick=()=>remind(b.dataset.say));
 /* habit counts: the buttons count, the way the app's Done and Later do */
